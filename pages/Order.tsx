@@ -86,10 +86,13 @@ const Order: React.FC = () => {
     );
   }
 
-  const allServiceNames = [
-    ...selectedPackages.map(p => p.name),
-    webMaintenanceService ? 'Web Maintenance Service' : null
-  ].filter(Boolean).join(', ');
+    const allServiceNames =
+      selectedPackages.length || webMaintenanceService
+        ? [
+            ...selectedPackages.map(p => p.name),
+            webMaintenanceService ? 'Web Maintenance Service' : null,
+          ].filter(Boolean).join(', ')
+        : 'No package selected';
 
   return (
     <div className="py-24 bg-slate-950 min-h-screen">
@@ -117,8 +120,22 @@ const Order: React.FC = () => {
               <form name="webrealm-order" method="POST" data-netlify="true" onSubmit={handleSubmit} className="space-y-8">
                 <input type="hidden" name="form-name" value="webrealm-order" />
                 <input type="hidden" name="services" value={allServiceNames} />
-                <input type="hidden" name="total-price" value={calculateTotal()} />
-                <input type="hidden" name="personalDomainName" value={hasPersonalDomain ? personalDomainName : 'Using WebRealm Shared Hosting'} />
+                <input
+                  type="hidden"
+                  name="total-price"
+                  value={calculateTotal() || '0'}
+                />
+
+                <input
+                  type="hidden"
+                  name="personalDomainName"
+                  value={
+                    hasPersonalDomain
+                      ? personalDomainName || 'Provided'
+                      : 'Using WebRealm Shared Hosting'
+                  }
+                />
+
 
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="space-y-3">
