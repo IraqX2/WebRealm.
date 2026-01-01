@@ -157,7 +157,7 @@ const Order: React.FC = () => {
                 {webMaintenanceService && (
                   <div className="space-y-3">
                     <label className="text-[10px] font-black uppercase tracking-widest text-orange-500 ml-4">Target Website for Maintenance</label>
-                    <input required name="target-site" value={existingWebsite} onChange={(e) => setExistingWebsite(e.target.value)} type="url" className="w-full bg-slate-900 border border-orange-500/40 px-8 py-6 rounded-2xl text-white outline-none focus:border-orange-500 transition-all" placeholder="https://yourwebsite.com" />
+                    <input name="target-site" value={existingWebsite} onChange={(e) => setExistingWebsite(e.target.value)} type="url" className="w-full bg-slate-900 border border-orange-500/40 px-8 py-6 rounded-2xl text-white outline-none focus:border-orange-500 transition-all" placeholder="Website (if you already have one)" />
                   </div>
                 )}
 
