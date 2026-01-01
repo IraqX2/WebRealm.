@@ -1,91 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Basic Meta -->
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebRealm | Custom Web Development</title>
-    <meta
-      name="description"
-      content="Custom-built, high-tech websites for premium brands. No templates. Pure performance."
-    />
+<head>
+  <link rel="icon" type="image/png" href="https://res.cloudinary.com/dx9efyuos/image/upload/v1767199524/Black_and_White_Minimalist_Simple_Modern_Technology_AI_Logo_2_vj0gq5.png" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WebRealm | Custom Web Development</title>
 
-    <!-- Favicon -->
-    <link
-      rel="icon"
-      type="image/png"
-      href="https://res.cloudinary.com/dx9efyuos/image/upload/v1767199524/Black_and_White_Minimalist_Simple_Modern_Technology_AI_Logo_2_vj0gq5.png"
-    />
+  <meta name="description" content="Custom-built, high-tech websites for premium brands. No templates. Pure performance." />
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="WebRealm - Custom High-Performance Web Development" />
-    <meta
-      property="og:description"
-      content="WebRealm sells custom-coded high-value websites. Strategy, Design, and Development for serious brands."
-    />
-    <meta property="og:type" content="website" />
+  <!-- Open Graph -->
+  <meta property="og:title" content="WebRealm - Custom High-Performance Web Development" />
+  <meta property="og:description" content="WebRealm sells custom-coded high-value websites." />
+  <meta property="og:type" content="website" />
 
-    <!-- Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- App CSS -->
-    <link rel="stylesheet" href="/index.css" />
+  <link rel="stylesheet" href="/index.css" />
 
-    <!-- Inline base styles (safe) -->
-    <style>
-      body {
-        font-family: 'Inter', sans-serif;
-        background-color: #020617;
-        scroll-behavior: smooth;
-      }
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      scroll-behavior: smooth;
+      background-color: #020617;
+    }
 
-      .font-bn {
-        font-family: 'Hind Siliguri', sans-serif !important;
-        line-height: 1.6;
-      }
+    .font-bn {
+      font-family: 'Hind Siliguri', sans-serif !important;
+      line-height: 1.6;
+    }
 
-      .text-gradient {
-        background: linear-gradient(135deg, #60a5fa 0%, #2dd4bf 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        display: inline-block;
-        padding-right: 0.15em;
-        margin-right: -0.15em;
-      }
+    .text-gradient {
+      background: linear-gradient(135deg, #60a5fa 0%, #2dd4bf 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+      padding-right: 0.15em;
+      margin-right: -0.15em;
+    }
 
-      .feature-text {
-        font-weight: 400 !important;
-        letter-spacing: normal !important;
-        text-transform: none !important;
-      }
-    </style>
-  </head>
+    .feature-text {
+      font-weight: 400 !important;
+      letter-spacing: normal !important;
+      text-transform: none !important;
+    }
+  </style>
+</head>
 
-  <body>
-    <!-- ✅ Netlify form detection ONLY (hidden, safe) -->
-    <form
-      name="webrealm-order"
-      method="POST"
-      data-netlify="true"
-      data-netlify-honeypot="bot-field"
-      hidden
-    >
-      <input type="hidden" name="form-name" value="webrealm-order" />
-      <p>
-        <label>
-          Don’t fill this out:
-          <input name="bot-field" />
-        </label>
-      </p>
-    </form>
+<body class="text-slate-100 selection:bg-blue-500/30">
 
-    <!-- React Mount -->
-    <div id="root"></div>
+  <!-- Netlify form detection (safe, invisible) -->
+  <form
+    name="webrealm-order"
+    method="POST"
+    data-netlify="true"
+    data-netlify-honeypot="bot-field"
+    hidden
+  >
+    <input type="hidden" name="form-name" value="webrealm-order" />
+    <p>
+      <label>Don’t fill this out: <input name="bot-field" /></label>
+    </p>
+  </form>
 
-    <!-- 🔥 Vite Entry (DO NOT TOUCH) -->
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+  <div id="root"></div>
+
+  <!-- 🔥 THIS IS THE KEY LINE -->
+  <script type="module" src="/index.tsx"></script>
+</body>
 </html>
