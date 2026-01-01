@@ -1,71 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="icon" type="image/png" href="https://res.cloudinary.com/dx9efyuos/image/upload/v1767199524/Black_and_White_Minimalist_Simple_Modern_Technology_AI_Logo_2_vj0gq5.png" />
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WebRealm | Custom Web Development</title>
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/dx9efyuos/image/upload/v1767199524/Black_and_White_Minimalist_Simple_Modern_Technology_AI_Logo_2_vj0gq5.png" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebRealm | Custom Web Development</title>
+    <meta name="description" content="Custom-built, high-tech websites for premium brands. No templates. Pure performance. Built with HTML, CSS, and JavaScript.">
+    <!-- Open Graph -->
+    <meta property="og:title" content="WebRealm - Custom High-Performance Web Development">
+    <meta property="og:description" content="WebRealm sells custom-coded high-value websites. Strategy, Design, and Development for serious brands.">
+    <meta property="og:type" content="website">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+            background-color: #020617; /* Slate-950 */
+        }
+        
+        /* Specialized Bangla Font Class */
+        .font-bn {
+            font-family: 'Hind Siliguri', sans-serif !important;
+            line-height: 1.6;
+        }
 
-  <meta name="description" content="Custom-built, high-tech websites for premium brands. No templates. Pure performance." />
+        .bg-glass {
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        
+        /* Fixed clipping for italic gradient text */
+        .text-gradient {
+            background: linear-gradient(135deg, #60a5fa 0%, #2dd4bf 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+            padding-right: 0.15em; /* Prevents italic slant from clipping */
+            margin-right: -0.15em;
+        }
+        
+        .premium-border {
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        .glow-blue {
+          box-shadow: 0 0 20px rgba(37, 99, 235, 0.15);
+        }
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="WebRealm - Custom High-Performance Web Development" />
-  <meta property="og:description" content="WebRealm sells custom-coded high-value websites." />
-  <meta property="og:type" content="website" />
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="/index.css" />
-
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      scroll-behavior: smooth;
-      background-color: #020617;
-    }
-
-    .font-bn {
-      font-family: 'Hind Siliguri', sans-serif !important;
-      line-height: 1.6;
-    }
-
-    .text-gradient {
-      background: linear-gradient(135deg, #60a5fa 0%, #2dd4bf 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      display: inline-block;
-      padding-right: 0.15em;
-      margin-right: -0.15em;
-    }
-
-    .feature-text {
-      font-weight: 400 !important;
-      letter-spacing: normal !important;
-      text-transform: none !important;
-    }
-  </style>
+        /* Utility for normal feature text */
+        .feature-text {
+            font-weight: 400 !important;
+            letter-spacing: normal !important;
+            text-transform: none !important;
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "framer-motion": "https://esm.sh/framer-motion@^12.23.26",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.11.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
 </head>
-
 <body class="text-slate-100 selection:bg-blue-500/30">
-
-  <!-- Netlify form detection (safe, invisible) -->
-  <form
-    name="webrealm-order"
-    method="POST"
-    data-netlify="true"
-    data-netlify-honeypot="bot-field"
-    hidden
-  >
-    <input type="hidden" name="form-name" value="webrealm-order" />
-    <p>
-      <label>Don’t fill this out: <input name="bot-field" /></label>
-    </p>
-  </form>
-
-  <div id="root"></div>
-
-  <!-- 🔥 THIS IS THE KEY LINE -->
-  <script type="module" src="/index.tsx"></script>
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
 </body>
 </html>
