@@ -72,23 +72,34 @@
     <div id="root"></div>
 <script type="module" src="/index.tsx"></script>
 
-<!-- Netlify form detection: DO NOT REMOVE -->
+
+<!-- Netlify Form (DO NOT REMOVE) -->
 <form
   name="webrealm-order"
   method="POST"
   data-netlify="true"
+  netlify-honeypot="bot-field"
   hidden
 >
+  <!-- Required for Netlify -->
   <input type="hidden" name="form-name" value="webrealm-order" />
-  <input name="fullName" />
-  <input name="business" />
-  <input name="email" />
-  <input name="phone" />
+
+  <!-- Honeypot -->
+  <input name="bot-field" />
+
+  <!-- MUST MATCH React field names EXACTLY -->
+  <input type="text" name="fullName" />
+  <input type="text" name="business" />
+  <input type="email" name="email" />
+  <input type="tel" name="phone" />
   <textarea name="details"></textarea>
-  <input name="services" />
-  <input name="total-price" />
-  <input name="personalDomainName" />
+
+  <!-- Extra fields -->
+  <input type="text" name="services" />
+  <input type="text" name="total-price" />
+  <input type="text" name="personalDomainName" />
 </form>
+
 
 </body>
 </html>
