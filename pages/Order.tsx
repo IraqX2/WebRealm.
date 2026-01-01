@@ -118,14 +118,14 @@ const Order: React.FC = () => {
                 <input type="hidden" name="form-name" value="webrealm-order" />
                 <input type="hidden" name="services" value={allServiceNames} />
                 <input type="hidden" name="total-price" value={calculateTotal()} />
-                <input type="hidden" name="personal-domain" value={hasPersonalDomain ? personalDomainName : 'Using WebRealm Shared Hosting'} />
+                <input type="hidden" name="personalDomainName" value={hasPersonalDomain ? personalDomainName : 'Using WebRealm Shared Hosting'} />
 
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="space-y-3">
                     <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-4">Full Name</label>
                     <input 
                       required 
-                      name="full-name" 
+                      name="fullName" 
                       type="text" 
                       value={formData.fullName}
                       onChange={(e) => setFormData({...formData, fullName: e.target.value})}
@@ -204,7 +204,16 @@ const Order: React.FC = () => {
                     <AnimatePresence mode="wait">
                       {hasPersonalDomain ? (
                         <motion.div key="domain-input" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                          <input required={hasPersonalDomain} type="text" value={personalDomainName} onChange={(e) => setPersonalDomainName(e.target.value)} className="w-full bg-slate-950 border border-blue-500/20 px-8 py-5 rounded-2xl text-white outline-none focus:border-blue-500 transition-all" placeholder="e.g. www.yourbrand.com" />
+                          <input
+                                name="personalDomainName"
+                                required={hasPersonalDomain}
+                                type="text"
+                                value={personalDomainName}
+                                onChange={(e) => setPersonalDomainName(e.target.value)}
+                                className="w-full bg-slate-950 border border-blue-500/20 px-8 py-5 rounded-2xl text-white outline-none focus:border-blue-500 transition-all"
+                                placeholder="e.g. www.yourbrand.com"
+                              />
+
                         </motion.div>
                       ) : (
                         <motion.div key="no-domain-msg" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
