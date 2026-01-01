@@ -41,19 +41,37 @@ const Order: React.FC = () => {
   };
 
   const handleCopy = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
-    setCopyStatus(prev => ({ ...prev, [id]: true }));
-    setTimeout(() => setCopyStatus(prev => ({ ...prev, [id]: false })), 2000);
-  };
+        navigator.clipboard.writeText(text);
+        setCopyStatus(prev => ({ ...prev, [id]: true }));
+        setTimeout(() => setCopyStatus(prev => ({ ...prev, [id]: false })), 2000);
+      };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.email && !formData.phone) {
-      alert("Please provide either an Email address or a Phone number so we can contact you.");
-      return;
-    }
-    setSubmitted(true);
-  };
+      const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+
+      if (!formData.email && !formData.phone) {
+        alert("Please provide either an Email address or a Phone number");
+        return;
+      }
+
+      const form = e.currentTarget;
+      const data = new FormData(form);
+
+      try {
+        await fetch("/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams(data as any).toString(),
+        });
+
+        setSubmitted(true);
+      } catch (error) {
+        alert("Submission failed. Please try again.");
+      }
+    };
+
 
   if (submitted) {
     return (
