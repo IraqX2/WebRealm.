@@ -171,6 +171,20 @@ export const DEMO_PROJECTS: DemoProject[] = [
     link: 'https://demopakage-shop.pages.dev/',
     tags: ['SaaS', 'Business']
   },
+
+  {
+    id: '5',
+    title: 'Digital marketting',
+    description: 'A clean website for digital merketting service..',
+    images: [
+      'https://res.cloudinary.com/dx9efyuos/image/upload/v1768171746/f9608004-a378-4f71-8e29-5fed69ad665e.png',
+      'https://res.cloudinary.com/dx9efyuos/image/upload/v1768171859/9ecf05c9-af40-4639-9e8c-e497001fffda.png',
+      'https://res.cloudinary.com/dx9efyuos/image/upload/v1768171865/9dfdb6fe-f51b-4124-9887-6064b0454af8.png',
+      'https://res.cloudinary.com/dx9efyuos/image/upload/v1768171804/a56a8afc-9fc9-4007-b030-a057b3b79798.png'
+    ],
+    link: 'https://sociafy.pages.dev/',
+    tags: ['Digital', 'Business']
+  },
   /* 
     50 COMMENTED SLOTS FOR FUTURE WEB PROJECTS:
     05. { id: 'w5', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
