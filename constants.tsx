@@ -133,7 +133,7 @@ export const DEMO_PROJECTS: DemoProject[] = [
       'https://res.cloudinary.com/dx9efyuos/image/upload/v1767185931/Screenshot_2025-12-31_185345_p9iy09.png',
       'https://res.cloudinary.com/dx9efyuos/image/upload/v1767185932/Screenshot_2025-12-31_185258_xusovn.png'
     ],
-    link: 'https://airacraft.netlify.app/',
+    link: 'https://airacraft.pages.dev/',
     tags: ['E-commerce', 'Online Shop']
   },
   {
@@ -146,7 +146,7 @@ export const DEMO_PROJECTS: DemoProject[] = [
       'https://res.cloudinary.com/dx9efyuos/image/upload/v1767185933/Screenshot_2025-12-31_185610_tcxle1.png',
       'https://res.cloudinary.com/dx9efyuos/image/upload/v1767185933/Screenshot_2025-12-31_185549_aincxi.png'
     ],
-    link: 'https://pearl-by-payel-demo.netlify.app/',
+    link: 'https://demo-beauty-salon.pages.dev/',
     tags: ['Beauty', 'Service']
   },
   {
@@ -157,7 +157,7 @@ export const DEMO_PROJECTS: DemoProject[] = [
       'https://res.cloudinary.com/dx9efyuos/image/upload/v1767185933/Screenshot_2025-12-31_185629_eamymn.png',
       'https://res.cloudinary.com/dx9efyuos/image/upload/v1767185933/Screenshot_2025-12-31_185652_jqs1hi.png'
     ],
-    link: 'https://iraqhome.netlify.app/',
+    link: 'https://portfolio-247.pages.dev/',
     tags: ['Portfolio', 'Personal']
   },
   {
@@ -168,7 +168,7 @@ export const DEMO_PROJECTS: DemoProject[] = [
       'https://res.cloudinary.com/dx9efyuos/image/upload/v1767185931/Screenshot_2025-12-31_185410_vgx4s1.png',
       'https://res.cloudinary.com/dx9efyuos/image/upload/v1767185932/Screenshot_2025-12-31_185433_d7utlr.png'
     ],
-    link: 'https://demopakage.netlify.app/',
+    link: 'https://demopakage-shop.pages.dev/',
     tags: ['SaaS', 'Business']
   },
   /* 
