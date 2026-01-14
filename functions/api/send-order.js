@@ -15,7 +15,7 @@ export async function onRequest(context) {
 
     const adminEmailPayload = {
       personalizations: [{ to: [{ email: "ikraismam23@gmail.com" }] }],
-      from: { email: "no-reply@webrealm.com", name: "WebRealm System" },
+      from: { email: "no-reply@webrealmed.com", name: "WebRealm System" },
       subject: `New Order Received: ${orderId}`,
       content: [{
         type: "text/plain",
@@ -48,7 +48,7 @@ export async function onRequest(context) {
 
     const customerEmailPayload = {
       personalizations: [{ to: [{ email: customer.email }] }],
-      from: { email: "ikraismam23@gmail.com", name: "WebRealm Support" },
+      from: { email: "no-reply@webrealmed.com", name: "WebRealm Support" },
       subject: `Confirmation: Order ${orderId} Received`,
       content: [{
         type: "text/plain",
