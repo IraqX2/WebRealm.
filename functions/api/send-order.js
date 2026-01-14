@@ -99,7 +99,7 @@ export async function onRequest(context) {
 
   // Configure via Cloudflare Pages -> Settings -> Functions -> Variables
   const adminEmail = safeStr(env?.ADMIN_EMAIL) || "ikraismam23@gmail.com";
-  const fromEmail = safeStr(env?.FROM_EMAIL) || "orders@webrealmed.com";
+
   const fromName = safeStr(env?.FROM_NAME) || "WebRealm Orders";
   const supportWhatsApp = safeStr(env?.WHATSAPP_NUMBER) || "8801939888381";
 
@@ -181,7 +181,11 @@ If you need to verify/payment-confirm fast, WhatsApp us: +${supportWhatsApp}
     // Admin email
     await sendMail({
       personalizations: [{ to: [{ email: adminEmail }] }],
-      from: { email: fromEmail, name: fromName },
+      from: {
+              email: `orders@${new URL(context.request.url).hostname}`,
+              name: fromName || "WebRealm Orders"
+            },
+
       reply_to: { email: customerEmail, name: customerName },
       subject: `[WEBREALM ORDER] ${orderId} - ${customerName}`,
       content: [
@@ -193,7 +197,11 @@ If you need to verify/payment-confirm fast, WhatsApp us: +${supportWhatsApp}
     // Client email
     await sendMail({
       personalizations: [{ to: [{ email: customerEmail }] }],
-      from: { email: fromEmail, name: fromName },
+      from: {
+              email: `orders@${new URL(context.request.url).hostname}`,
+              name: fromName || "WebRealm Orders"
+            },
+
       reply_to: { email: adminEmail, name: fromName },
       subject: `WebRealm order received: ${orderId}`,
       content: [
