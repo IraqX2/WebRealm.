@@ -129,8 +129,8 @@ const Order: React.FC = () => {
     // Transition to success screen INSTANTLY
     setStep(2);
 
-    // Send email in background without blocking the UI
-    fetch('/api/send-order', {
+    // Fix: Using absolute URL to ensure request bypasses HashRouter and hits the Worker directly
+    fetch('https://webrealmed.com/api/send-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(orderData)
