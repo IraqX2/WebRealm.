@@ -12,10 +12,12 @@ export async function onRequest(context) {
 
   // Handle preflight
   if (request.method === "OPTIONS") {
+    console.log("Handling OPTIONS preflight");
     return new Response(null, { status: 204, headers: responseHeaders });
   }
 
   if (request.method !== "POST") {
+    console.log(`Method ${request.method} not allowed`);
     return new Response(JSON.stringify({ error: "Method not allowed" }), { 
       status: 405, 
       headers: responseHeaders 
@@ -24,6 +26,8 @@ export async function onRequest(context) {
 
   try {
     const data = await request.json();
+    console.log("Order Data Received:", JSON.stringify(data));
+    
     const { orderId, customer, items, total, paymentMode, paymentMethod, senderNumber } = data;
 
     const itemsList = items && items.length > 0 
@@ -32,15 +36,9 @@ export async function onRequest(context) {
       
     const timestamp = new Date().toLocaleString('en-US', { timeZone: 'Asia/Dhaka' });
 
-    // Payload for Admin
-    const adminEmailPayload = {
-      personalizations: [{ to: [{ email: "ikraismam23@gmail.com" }] }],
-      from: { email: "orders@webrealm.io", name: "WebRealm Orders" },
-      subject: `[WEBREALM] NEW ORDER: ${orderId}`,
-      content: [{
-        type: "text/plain",
-        value: `
-WebRealm New Order
+    // Build the plain text bodies
+    const adminBody = `
+WebRealm New Order Event
 ================================
 ID: ${orderId}
 Time (BD): ${timestamp}
@@ -63,64 +61,73 @@ Mode: ${paymentMode === 'now' ? 'Instant Pay' : 'Pay Later Request'}
 Method: ${paymentMethod || 'N/A'}
 TXN/Sender: ${senderNumber || 'N/A'}
 ================================
-        `
-      }]
-    };
+`;
 
-    // Payload for Customer
-    const customerEmailPayload = {
-      personalizations: [{ to: [{ email: customer.email }] }],
-      from: { email: "hello@webrealm.io", name: "WebRealm Support" },
-      subject: `Order Confirmation - ${orderId}`,
-      content: [{
-        type: "text/plain",
-        value: `
+    const customerBody = `
 Hello ${customer.fullName},
 
-Thank you for choosing WebRealm! We've received your order request.
+Thank you for choosing WebRealm! We've received your project order.
 
 ORDER ID: ${orderId}
-STATUS: In Review
+STATUS: Queued for Review
 
-Our team will contact you via WhatsApp or Email within the next few hours to discuss your project requirements in detail.
+What happens next?
+1. Our engineering lead will review your project brief.
+2. We will contact you via WhatsApp (${customer.phone}) or Email to discuss the roadmap.
+3. Once requirements are locked, work begins immediately.
 
-Urgent? Message us on WhatsApp: https://wa.me/8801939888381
+Need to talk now? Message us: https://wa.me/8801939888381
 
 Best Regards,
 The WebRealm Team
-        `
-      }]
-    };
+`;
 
-    // MailChannels Send Helper
-    const sendMail = async (payload) => {
-      return fetch("https://api.mailchannels.net/tx/v1/send", {
+    // MailChannels Sending Function
+    const sendMail = async (toEmail, subject, body, fromEmail, fromName) => {
+      const payload = {
+        personalizations: [{ to: [{ email: toEmail }] }],
+        from: { email: fromEmail, name: fromName },
+        subject: subject,
+        content: [{ type: "text/plain", value: body }]
+      };
+
+      console.log(`Attempting to send email to ${toEmail}...`);
+      const res = await fetch("https://api.mailchannels.net/tx/v1/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
+      
+      const status = res.status;
+      const text = await res.text();
+      console.log(`MailChannels response for ${toEmail}: ${status} - ${text}`);
+      
+      return { status, text };
     };
 
-    // Trigger both emails
+    // Execute mail sending
+    // We attempt these but even if they fail, we return success for the order itself
+    // as it's logged in the Cloudflare Function logs.
     const results = await Promise.allSettled([
-      sendMail(adminEmailPayload),
-      sendMail(customerEmailPayload)
+      sendMail("ikraismam23@gmail.com", `[NEW ORDER] ${orderId} - ${customer.fullName}`, adminBody, "orders@webrealm.io", "WebRealm Orders"),
+      sendMail(customer.email, `Order Confirmation - ${orderId}`, customerBody, "support@webrealm.io", "WebRealm Support")
     ]);
 
-    console.log("Mail results:", results);
+    console.log("Final Mail Transaction Results:", JSON.stringify(results));
 
     return new Response(JSON.stringify({ 
       success: true, 
-      orderId: orderId 
+      orderId: orderId,
+      timestamp: timestamp
     }), {
       status: 200,
       headers: responseHeaders
     });
 
   } catch (err) {
-    console.error("Critical Function Error:", err.message);
+    console.error("CRITICAL API FAILURE:", err.message);
     return new Response(JSON.stringify({ 
-      error: "INTERNAL_SERVER_ERROR", 
+      error: "SERVER_TRANS_ERROR", 
       details: err.message 
     }), { 
       status: 500,
