@@ -9,7 +9,7 @@ export const PACKAGES: Package[] = [
     price: 5000,
     category: 'web',
     description: 'Perfect for small businesses and personal brands needing a professional look.',
-    highlighted: true,
+    highlighted: false,
     features: [
       'Modern & Professional Design',
       'Works perfectly on Mobile & Tablets',
@@ -29,7 +29,7 @@ export const PACKAGES: Package[] = [
     price: 8000,
     category: 'web',
     description: 'The best choice for businesses ready to stand out from the competition.',
-    highlighted: false,
+    highlighted: true,
     features: [
       'Everything in Starter Package',
       'Premium Custom Animations',
@@ -149,6 +149,21 @@ export const DEMO_PROJECTS: DemoProject[] = [
     link: 'https://demo-beauty-salon.pages.dev/',
     tags: ['Beauty', 'Service']
   },
+
+    {
+    id: '5',
+    title: 'Digital marketting',
+    description: 'A clean website for digital merketting service..',
+    images: [
+      'https://res.cloudinary.com/dx9efyuos/image/upload/v1768171746/f9608004-a378-4f71-8e29-5fed69ad665e.png',
+      'https://res.cloudinary.com/dx9efyuos/image/upload/v1768171859/9ecf05c9-af40-4639-9e8c-e497001fffda.png',
+      'https://res.cloudinary.com/dx9efyuos/image/upload/v1768171865/9dfdb6fe-f51b-4124-9887-6064b0454af8.png',
+      'https://res.cloudinary.com/dx9efyuos/image/upload/v1768171804/a56a8afc-9fc9-4007-b030-a057b3b79798.png'
+    ],
+    link: 'https://sociafy.pages.dev/',
+    tags: ['Digital', 'Business']
+  },
+  
   {
     id: '3',
     title: 'Pro Portfolio',
@@ -170,74 +185,7 @@ export const DEMO_PROJECTS: DemoProject[] = [
     ],
     link: 'https://demopakage-shop.pages.dev/',
     tags: ['SaaS', 'Business']
-  },
-
-  {
-    id: '5',
-    title: 'Digital marketting',
-    description: 'A clean website for digital merketting service..',
-    images: [
-      'https://res.cloudinary.com/dx9efyuos/image/upload/v1768171746/f9608004-a378-4f71-8e29-5fed69ad665e.png',
-      'https://res.cloudinary.com/dx9efyuos/image/upload/v1768171859/9ecf05c9-af40-4639-9e8c-e497001fffda.png',
-      'https://res.cloudinary.com/dx9efyuos/image/upload/v1768171865/9dfdb6fe-f51b-4124-9887-6064b0454af8.png',
-      'https://res.cloudinary.com/dx9efyuos/image/upload/v1768171804/a56a8afc-9fc9-4007-b030-a057b3b79798.png'
-    ],
-    link: 'https://sociafy.pages.dev/',
-    tags: ['Digital', 'Business']
-  },
-  /* 
-    50 COMMENTED SLOTS FOR FUTURE WEB PROJECTS:
-    05. { id: 'w5', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    06. { id: 'w6', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    07. { id: 'w7', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    08. { id: 'w8', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    09. { id: 'w9', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    10. { id: 'w10', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    11. { id: 'w11', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    12. { id: 'w12', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    13. { id: 'w13', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    14. { id: 'w14', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    15. { id: 'w15', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    16. { id: 'w16', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    17. { id: 'w17', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    18. { id: 'w18', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    19. { id: 'w19', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    20. { id: 'w20', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    21. { id: 'w21', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    22. { id: 'w22', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    23. { id: 'w23', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    24. { id: 'w24', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    25. { id: 'w25', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    26. { id: 'w26', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    27. { id: 'w27', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    28. { id: 'w28', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    29. { id: 'w29', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    30. { id: 'w30', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    31. { id: 'w31', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    32. { id: 'w32', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    33. { id: 'w33', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    34. { id: 'w34', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    35. { id: 'w35', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    36. { id: 'w36', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    37. { id: 'w37', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    38. { id: 'w38', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    39. { id: 'w39', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    40. { id: 'w40', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    41. { id: 'w41', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    42. { id: 'w42', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    43. { id: 'w43', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    44. { id: 'w44', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    45. { id: 'w45', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    46. { id: 'w46', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    47. { id: 'w47', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    48. { id: 'w48', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    49. { id: 'w49', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    50. { id: 'w50', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    51. { id: 'w51', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    52. { id: 'w52', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    53. { id: 'w53', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] },
-    54. { id: 'w54', title: 'Future Hub', images: ['...', '...', '...'], link: '...', tags: ['...'] }
-  */
+  }
 ];
 
 export const GALLERY_ITEMS: GalleryItem[] = [
@@ -275,68 +223,6 @@ export const GRAPHICS_GALLERY_ITEMS: GalleryItem[] = [
   { id: 'gfx18', title: 'IG Reel Covers - Luxury', image: 'https://res.cloudinary.com/dx9efyuos/image/upload/v1767187374/fq_jijmaa.png', category: 'Social Media' },
   { id: 'gfx19', title: 'Tech Event Poster', image: 'https://res.cloudinary.com/dx9efyuos/image/upload/v1767187376/wdwff_ijx4es.png', category: 'Graphics' },
   { id: 'gfx20', title: 'Minimalist Stationery', image: 'https://res.cloudinary.com/dx9efyuos/image/upload/v1767187372/Browndfdfsand_Beige_Clean_Minimalist_Product_Packaging_Mockup_Instagram_Post_vn6q1m.png', category: 'Branding' },
-  
-
-
-
-
-
-
-
-
-  /* 
-    50 COMMENTED SLOTS FOR FUTURE GRAPHICS PROJECTS:
-    21. 
-    22. 
-    23. ,
-    24. 
-    25. 
-    26. 
-    27. 
-    28. { id: 'gfx28', title: 'Future Design', image: '...', category: 'Branding' },
-    29. { id: 'gfx29', title: 'Future Design', image: '...', category: 'Branding' },
-    30. { id: 'gfx30', title: 'Future Design', image: '...', category: 'Branding' },
-    31. { id: 'gfx31', title: 'Future Design', image: '...', category: 'Branding' },
-    32. { id: 'gfx32', title: 'Future Design', image: '...', category: 'Branding' },
-    33. { id: 'gfx33', title: 'Future Design', image: '...', category: 'Branding' },
-    34. { id: 'gfx34', title: 'Future Design', image: '...', category: 'Branding' },
-    35. { id: 'gfx35', title: 'Future Design', image: '...', category: 'Branding' },
-    36. { id: 'gfx36', title: 'Future Design', image: '...', category: 'Branding' },
-    37. { id: 'gfx37', title: 'Future Design', image: '...', category: 'Branding' },
-    38. { id: 'gfx38', title: 'Future Design', image: '...', category: 'Branding' },
-    39. { id: 'gfx39', title: 'Future Design', image: '...', category: 'Branding' },
-    40. { id: 'gfx40', title: 'Future Design', image: '...', category: 'Branding' },
-    41. { id: 'gfx41', title: 'Future Design', image: '...', category: 'Branding' },
-    42. { id: 'gfx42', title: 'Future Design', image: '...', category: 'Branding' },
-    43. { id: 'gfx43', title: 'Future Design', image: '...', category: 'Branding' },
-    44. { id: 'gfx44', title: 'Future Design', image: '...', category: 'Branding' },
-    45. { id: 'gfx45', title: 'Future Design', image: '...', category: 'Branding' },
-    46. { id: 'gfx46', title: 'Future Design', image: '...', category: 'Branding' },
-    47. { id: 'gfx47', title: 'Future Design', image: '...', category: 'Branding' },
-    48. { id: 'gfx48', title: 'Future Design', image: '...', category: 'Branding' },
-    49. { id: 'gfx49', title: 'Future Design', image: '...', category: 'Branding' },
-    50. { id: 'gfx50', title: 'Future Design', image: '...', category: 'Branding' },
-    51. { id: 'gfx51', title: 'Future Design', image: '...', category: 'Branding' },
-    52. { id: 'gfx52', title: 'Future Design', image: '...', category: 'Branding' },
-    53. { id: 'gfx53', title: 'Future Design', image: '...', category: 'Branding' },
-    54. { id: 'gfx54', title: 'Future Design', image: '...', category: 'Branding' },
-    55. { id: 'gfx55', title: 'Future Design', image: '...', category: 'Branding' },
-    56. { id: 'gfx56', title: 'Future Design', image: '...', category: 'Branding' },
-    57. { id: 'gfx57', title: 'Future Design', image: '...', category: 'Branding' },
-    58. { id: 'gfx58', title: 'Future Design', image: '...', category: 'Branding' },
-    59. { id: 'gfx59', title: 'Future Design', image: '...', category: 'Branding' },
-    60. { id: 'gfx60', title: 'Future Design', image: '...', category: 'Branding' },
-    61. { id: 'gfx61', title: 'Future Design', image: '...', category: 'Branding' },
-    62. { id: 'gfx62', title: 'Future Design', image: '...', category: 'Branding' },
-    63. { id: 'gfx63', title: 'Future Design', image: '...', category: 'Branding' },
-    64. { id: 'gfx64', title: 'Future Design', image: '...', category: 'Branding' },
-    65. { id: 'gfx65', title: 'Future Design', image: '...', category: 'Branding' },
-    66. { id: 'gfx66', title: 'Future Design', image: '...', category: 'Branding' },
-    67. { id: 'gfx67', title: 'Future Design', image: '...', category: 'Branding' },
-    68. { id: 'gfx68', title: 'Future Design', image: '...', category: 'Branding' },
-    69. { id: 'gfx69', title: 'Future Design', image: '...', category: 'Branding' },
-    70. { id: 'gfx70', title: 'Future Design', image: '...', category: 'Branding' }
-  */
 ];
 
 export const TRANSLATIONS: Record<LanguageCode, any> = {

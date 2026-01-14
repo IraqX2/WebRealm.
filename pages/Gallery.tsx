@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GALLERY_ITEMS } from '../constants';
-import PromoBannerSlot from '../components/PromoBannerSlot';
 
 const Gallery: React.FC = () => {
   const [filter, setFilter] = useState('All');
@@ -22,11 +21,11 @@ const Gallery: React.FC = () => {
         
         {/* Header Section */}
         <div className="text-center mb-24">
-          <h1 className="text-6xl lg:text-9xl font-black text-white mb-8 tracking-tighter uppercase italic">The Archive</h1>
+          <h1 className="text-6xl lg:text-9xl font-black text-white mb-8 tracking-tighter uppercase">The Archive</h1>
           <p className="text-xl text-slate-400 max-w-2xl mx-auto font-medium leading-relaxed">Precision custom builds for high-value brands. No templates. No compromise.</p>
         </div>
 
-        {/* Categories (WIX-LIKE TABS) */}
+        {/* Categories */}
         <div className="flex flex-wrap justify-center gap-4 mb-20">
           {categories.map(cat => (
             <button
@@ -66,7 +65,7 @@ const Gallery: React.FC = () => {
                 </div>
                 <div className="p-10">
                   <span className="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] mb-3 block">{item.category}</span>
-                  <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter leading-none">{item.title}</h3>
+                  <h3 className="text-2xl font-black text-white uppercase tracking-tighter leading-none">{item.title}</h3>
                 </div>
               </motion.div>
             ))}

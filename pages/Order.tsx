@@ -16,352 +16,452 @@ const Order: React.FC = () => {
     formatPrice
   } = useCart();
 
-  const [submitted, setSubmitted] = useState(false);
-  const [existingWebsite, setExistingWebsite] = useState('');
-  const [hasPersonalDomain, setHasPersonalDomain] = useState(false);
-  const [personalDomainName, setPersonalDomainName] = useState('');
+  const [step, setStep] = useState(0); // 0: Details, 1: Payment Selection/Details, 2: Success
+  const [paymentMode, setPaymentMode] = useState<'now' | 'later'>('later');
   const [copyStatus, setCopyStatus] = useState<Record<string, boolean>>({});
+  const [selectedMethodId, setSelectedMethodId] = useState<string | null>(null);
+  const [orderId, setOrderId] = useState('');
   
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     phone: '',
     business: '',
-    details: ''
+    details: '',
+    senderNumber: ''
   });
 
   const isEmpty = selectedPackages.length === 0 && !webMaintenanceService;
-  const hasWebPackages = selectedPackages.some(pkg => pkg.category === 'web');
   
-  const paymentDetails = {
-    wallet: "01939888381",
-    islami: "20502166700004517",
-    sonali: "0126301008929",
-    mtb: "1311003292183"
-  };
+  const paymentMethods = [
+    {
+      id: 'bkash',
+      name: 'Bkash',
+      color: '#D12053',
+      number: '01939888381',
+      steps: [
+        { label: 'Open App', icon: '📱' },
+        { label: 'Click Send Money', icon: '💸' },
+        { label: 'Paste Number 01939888381', icon: '📋' },
+        { label: 'Send', icon: '🚀' }
+      ],
+      icon: 'https://img.icons8.com/color/48/000000/wallet--v1.png'
+    },
+    {
+      id: 'nagad',
+      name: 'Nagad',
+      color: '#F7941D',
+      number: '01939888381',
+      steps: [
+        { label: 'Open App', icon: '📱' },
+        { label: 'Click Send Money', icon: '💸' },
+        { label: 'Paste Number 01939888381', icon: '📋' },
+        { label: 'Send', icon: '🚀' }
+      ],
+      icon: 'https://img.icons8.com/color/48/000000/wallet--v1.png'
+    },
+    {
+      id: 'islami',
+      name: 'Islami Bank',
+      color: '#10b981',
+      number: '20502166700004517',
+      steps: [
+        { label: 'Open App', icon: '🏦' },
+        { label: 'Click Bank Transfer', icon: '🔄' },
+        { label: 'Select Islami Bank', icon: '🏷️' },
+        { label: 'Account 20502166700004517', icon: '🔢' }
+      ],
+      icon: 'https://img.icons8.com/fluency/48/000000/bank.png'
+    },
+    {
+      id: 'mtb',
+      name: 'MTB Bank',
+      color: '#ef4444',
+      number: '1311003292183',
+      steps: [
+        { label: 'Open App', icon: '🏦' },
+        { label: 'Click MTB Transfer', icon: '⚡' },
+        { label: 'Paste 1311003292183', icon: '📋' },
+        { label: 'Send', icon: '🚀' }
+      ],
+      icon: 'https://img.icons8.com/fluency/48/000000/bank.png'
+    },
+    {
+      id: 'sonali',
+      name: 'Sonali Bank',
+      color: '#eab308',
+      number: '0126301008929',
+      steps: [
+        { label: 'Open App', icon: '🏦' },
+        { label: 'Click Bank Transfer', icon: '🔄' },
+        { label: 'Select Sonali Bank', icon: '🏷️' },
+        { label: 'Account 0126301008929', icon: '🔢' }
+      ],
+      icon: 'https://img.icons8.com/fluency/48/000000/bank.png'
+    }
+  ];
+
+  const currentMethod = paymentMethods.find(m => m.id === selectedMethodId);
 
   const handleCopy = (text: string, id: string) => {
-        navigator.clipboard.writeText(text);
-        setCopyStatus(prev => ({ ...prev, [id]: true }));
-        setTimeout(() => setCopyStatus(prev => ({ ...prev, [id]: false })), 2000);
-      };
+    navigator.clipboard.writeText(text);
+    setCopyStatus(prev => ({ ...prev, [id]: true }));
+    setTimeout(() => setCopyStatus(prev => ({ ...prev, [id]: false })), 2000);
+  };
 
-      const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
+  const generateOrderId = () => `WR-${Math.floor(10000 + Math.random() * 90000)}`;
 
-      if (!formData.email && !formData.phone) {
-        alert("Please provide either an Email address or a Phone number");
-        return;
-      }
+  const submitOrder = () => {
+    const newId = generateOrderId();
+    setOrderId(newId);
 
-      const form = e.currentTarget;
-      const data = new FormData(form);
-
-      try {
-        await fetch("/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: new URLSearchParams(data as any).toString(),
-        });
-
-        setSubmitted(true);
-      } catch (error) {
-        alert("Submission failed. Please try again.");
-      }
+    const orderData = {
+      orderId: newId,
+      customer: formData,
+      items: selectedPackages.map(p => ({ name: p.name, price: p.price })),
+      maintenance: webMaintenanceService,
+      total: calculateTotal(),
+      paymentMode: paymentMode,
+      paymentMethod: selectedMethodId,
+      senderNumber: formData.senderNumber
     };
 
+    // Transition to success screen INSTANTLY
+    setStep(2);
 
-  if (submitted) {
+    // Send email in background without blocking the UI
+    fetch('/api/send-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData)
+    }).catch(err => console.error("Email failed in background", err));
+  };
+
+  const handleNextStep = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.email && !formData.phone) {
+      alert("Please provide contact information.");
+      return;
+    }
+    
+    if (paymentMode === 'now') {
+      setStep(1);
+    } else {
+      submitOrder();
+    }
+  };
+
+  const handleFinalSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitOrder();
+  };
+
+  if (step === 2) {
     return (
       <div className="py-40 max-w-4xl mx-auto px-4 text-center">
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-slate-900 p-16 rounded-[4rem] border border-blue-500/20 shadow-3xl">
-          <div className="w-24 h-24 bg-blue-600/10 text-blue-500 rounded-full flex items-center justify-center text-5xl mx-auto mb-10">✓</div>
-          <h1 className="text-5xl font-black mb-8 uppercase italic tracking-tighter text-white">Order Received!</h1>
-          <p className="text-slate-400 mb-12 font-medium leading-relaxed max-w-lg mx-auto">We got your details. Our team will contact you via WhatsApp or Email within 24 hours to finalize the requirements.</p>
-          <button onClick={() => { resetCart(); setSubmitted(false); }} className="bg-blue-600 px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-xs text-white">Return to Shop</button>
+        <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="bg-slate-900 p-16 rounded-[4rem] border border-blue-500/20 shadow-3xl">
+          <div className="w-20 h-20 bg-blue-600/10 text-blue-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-10 font-bold">✓</div>
+          <h1 className="text-5xl font-extrabold mb-4 uppercase tracking-tighter text-white">Order Received</h1>
+          <p className="text-blue-500 font-black tracking-widest uppercase text-sm mb-10">Order ID: {orderId}</p>
+          
+          <p className="text-slate-200 mb-8 font-semibold text-lg leading-relaxed max-w-lg mx-auto">
+            {paymentMode === 'later' 
+              ? "Your request has been filed. We have sent a confirmation to your email." 
+              : "Payment details submitted! Our team will verify and reach out to begin your project."}
+          </p>
+
+          {paymentMode === 'later' && (
+            <div className="space-y-8 mb-12">
+              <div className="bg-slate-950 border border-white/5 p-6 rounded-3xl max-w-md mx-auto">
+                <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-widest">Policy Hub</p>
+                <p className="text-xs text-slate-300 mt-2 font-medium">Half of the payment for services must be done before the work starts because hosting and other work related pays are included in that.</p>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <a 
+                  href="https://wa.me/8801939888381" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-4 bg-emerald-600 text-white px-10 py-5 rounded-2xl font-bold uppercase tracking-widest text-xs shadow-2xl hover:bg-emerald-700 transition-all hover:scale-105"
+                >
+                  <img src="https://img.icons8.com/color/48/000000/whatsapp--v1.png" className="w-6 h-6" alt="WhatsApp" />
+                  WhatsApp Now
+                </a>
+                <a 
+                  href="mailto:ikraismam23@gmail.com" 
+                  className="inline-flex items-center justify-center gap-4 bg-slate-800 text-white px-10 py-5 rounded-2xl font-bold uppercase tracking-widest text-xs border border-white/10 hover:bg-slate-700 transition-all"
+                >
+                  Email Support
+                </a>
+              </div>
+            </div>
+          )}
+
+          <div className="flex justify-center gap-4">
+            <button onClick={() => { resetCart(); navigate('/'); }} className="bg-blue-600 px-12 py-5 rounded-2xl font-bold uppercase tracking-widest text-xs text-white shadow-2xl hover:bg-blue-700 transition-all">Back to Home</button>
+          </div>
         </motion.div>
       </div>
     );
   }
 
-    const allServiceNames =
-      selectedPackages.length || webMaintenanceService
-        ? [
-            ...selectedPackages.map(p => p.name),
-            webMaintenanceService ? 'Web Maintenance Service' : null,
-          ].filter(Boolean).join(', ')
-        : 'No package selected';
-
   return (
     <div className="py-24 bg-slate-950 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
         <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-8">
-          <h1 className="text-5xl font-black uppercase italic tracking-tighter text-white">Checkout Order</h1>
-          {!isEmpty && (
-            <button 
-              onClick={() => navigate('/pricing')}
-              className="bg-blue-600 text-white px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl hover:bg-blue-700 transition-all hover:scale-105 active:scale-95"
-            >
-              ADD MORE PACKAGE
-            </button>
-          )}
+          <div>
+             <h1 className="text-5xl font-extrabold uppercase tracking-tighter text-white">
+                {step === 0 ? "Order Details" : "Secure Checkout"}
+             </h1>
+             <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mt-2">
+                Phase {step + 1} of 2
+             </p>
+          </div>
+          <div className="bg-slate-900 px-8 py-4 rounded-full border border-white/5 flex gap-4">
+             <div className={`w-3 h-3 rounded-full transition-all duration-500 ${step >= 0 ? 'bg-blue-500 shadow-[0_0_10px_#3b82f6]' : 'bg-slate-700'}`}></div>
+             <div className={`w-3 h-3 rounded-full transition-all duration-500 ${step >= 1 ? 'bg-blue-500 shadow-[0_0_10px_#3b82f6]' : 'bg-slate-700'}`}></div>
+          </div>
         </div>
         
         <div className="grid lg:grid-cols-5 gap-16">
           <div className="lg:col-span-3">
             {isEmpty ? (
               <div className="bg-slate-900 p-20 rounded-[3rem] text-center border border-white/5 shadow-2xl">
-                <p className="text-slate-500 mb-12 font-black uppercase tracking-widest">Your order list is empty.</p>
-                <Link to="/pricing" className="bg-blue-600 px-12 py-5 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl inline-block transition-all hover:scale-105 text-white">Browse Services</Link>
+                <p className="text-slate-500 mb-12 font-bold uppercase tracking-widest">Empty Cart</p>
+                <Link to="/pricing" className="bg-blue-600 px-12 py-5 rounded-2xl font-bold uppercase text-xs tracking-widest shadow-xl inline-block transition-all hover:scale-105 text-white">View Catalog</Link>
               </div>
             ) : (
-              <form name="webrealm-order" method="POST" data-netlify="true" onSubmit={handleSubmit} className="space-y-8">
-                <input type="hidden" name="form-name" value="webrealm-order" />
-                <input type="hidden" name="services" value={allServiceNames} />
-                <input
-                  type="hidden"
-                  name="total-price"
-                  value={calculateTotal() || '0'}
-                />
-
-                <input
-                  type="hidden"
-                  name="personalDomainName"
-                  value={
-                    hasPersonalDomain
-                      ? personalDomainName || 'Provided'
-                      : 'Using WebRealm Shared Hosting'
-                  }
-                />
-
-
-                <div className="grid md:grid-cols-2 gap-8">
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-4">Full Name</label>
-                    <input 
-                      required 
-                      name="fullName" 
-                      type="text" 
-                      value={formData.fullName}
-                      onChange={(e) => setFormData({...formData, fullName: e.target.value})}
-                      className="w-full bg-slate-900 border border-white/5 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 transition-all" 
-                      placeholder="Enter Full Name" 
-                    />
-                  </div>
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-4">Business Name</label>
-                    <input 
-                      required 
-                      name="business" 
-                      type="text" 
-                      value={formData.business}
-                      onChange={(e) => setFormData({...formData, business: e.target.value})}
-                      className="w-full bg-slate-900 border border-white/5 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 transition-all" 
-                      placeholder="Brand Name" 
-                    />
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-8">
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Email Address</label>
-                    <input 
-                      name="email" 
-                      type="email" 
-                      value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="w-full bg-slate-900 border border-white/5 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 transition-all invalid:border-yellow-500/50" 
-                      placeholder="email@example.com" 
-                    />
-                  </div>
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Phone / WhatsApp Number</label>
-                    <input 
-                      name="phone" 
-                      type="tel" 
-                      value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                      className="w-full bg-slate-900 border border-white/5 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 transition-all" 
-                      placeholder="+880..." 
-                    />
-                  </div>
-                </div>
-
-                {webMaintenanceService && (
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-orange-500 ml-4">Target Website for Maintenance</label>
-                    <input name="target-site" value={existingWebsite} onChange={(e) => setExistingWebsite(e.target.value)} type="url" className="w-full bg-slate-900 border border-orange-500/40 px-8 py-6 rounded-2xl text-white outline-none focus:border-orange-500 transition-all" placeholder="Website (if you already have one)" />
-                  </div>
-                )}
-
-                <div className="space-y-3">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-4">Project Brief & Details</label>
-                  <textarea 
-                    required 
-                    name="details" 
-                    value={formData.details}
-                    onChange={(e) => setFormData({...formData, details: e.target.value})}
-                    rows={4} 
-                    className="w-full bg-slate-900 border border-white/5 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 transition-all" 
-                    placeholder="Tell us about your brand and what you expect..."
-                  ></textarea>
-                </div>
-
-                {/* DOMAIN SECTION */}
-                {hasWebPackages && (
-                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-8 bg-slate-900 rounded-[2.5rem] border border-white/5 space-y-6 shadow-xl">
-                    <label className="flex items-center gap-4 cursor-pointer group">
-                      <div onClick={() => setHasPersonalDomain(!hasPersonalDomain)} className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${hasPersonalDomain ? 'bg-blue-600 border-blue-600 shadow-[0_0_15px_rgba(37,99,235,0.4)]' : 'border-white/10 bg-white/5 group-hover:border-white/30'}`}>
-                        {hasPersonalDomain && <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M5 13l4 4L19 7" /></svg>}
+              <AnimatePresence mode="wait">
+                {step === 0 ? (
+                  <motion.form 
+                    key="step0"
+                    initial={{ opacity: 0, y: 10 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    exit={{ opacity: 0, y: -10 }}
+                    onSubmit={handleNextStep} 
+                    className="space-y-8"
+                  >
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-4">Full Name</label>
+                        <input 
+                          required 
+                          type="text" 
+                          value={formData.fullName}
+                          onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+                          className="w-full bg-slate-900 border border-white/5 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 transition-all font-medium" 
+                          placeholder="Your Name" 
+                        />
                       </div>
-                      <span className="text-sm font-black uppercase italic tracking-tighter text-white select-none">Do you have your personal domain?</span>
-                    </label>
-                    <AnimatePresence mode="wait">
-                      {hasPersonalDomain ? (
-                        <motion.div key="domain-input" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                          <input
-                                name="personalDomainName"
-                                required={hasPersonalDomain}
-                                type="text"
-                                value={personalDomainName}
-                                onChange={(e) => setPersonalDomainName(e.target.value)}
-                                className="w-full bg-slate-950 border border-blue-500/20 px-8 py-5 rounded-2xl text-white outline-none focus:border-blue-500 transition-all"
-                                placeholder="e.g. www.yourbrand.com"
-                              />
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-4">Business Name</label>
+                        <input 
+                          required 
+                          type="text" 
+                          value={formData.business}
+                          onChange={(e) => setFormData({...formData, business: e.target.value})}
+                          className="w-full bg-slate-900 border border-white/5 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 transition-all font-medium" 
+                          placeholder="Your Brand" 
+                        />
+                      </div>
+                    </div>
 
-                        </motion.div>
-                      ) : (
-                        <motion.div key="no-domain-msg" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                          <p className="text-[11px] text-slate-500 font-medium italic p-4 bg-slate-950 rounded-2xl border border-white/5">Note: Without a domain, we use a shared sub-link (yourname.webrealm.app). Custom domains are recommended for better branding.</p>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-4">Email Address</label>
+                        <input 
+                          required
+                          name="email" 
+                          type="email" 
+                          value={formData.email}
+                          onChange={(e) => setFormData({...formData, email: e.target.value})}
+                          className="w-full bg-slate-900 border border-white/5 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 transition-all font-medium" 
+                          placeholder="hello@example.com" 
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-4">WhatsApp / Phone</label>
+                        <input 
+                          required
+                          name="phone" 
+                          type="tel" 
+                          value={formData.phone}
+                          onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                          className="w-full bg-slate-900 border border-white/5 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 transition-all font-medium" 
+                          placeholder="+880..." 
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-4">Project Brief</label>
+                      <textarea 
+                        required 
+                        value={formData.details}
+                        onChange={(e) => setFormData({...formData, details: e.target.value})}
+                        rows={4} 
+                        className="w-full bg-slate-900 border border-white/5 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 transition-all font-medium" 
+                        placeholder="Tell us what you need..."
+                      ></textarea>
+                    </div>
+
+                    <div className="bg-slate-900/40 p-10 rounded-[2.5rem] border border-white/5 space-y-8">
+                       <h3 className="text-xl font-extrabold uppercase tracking-tighter text-white">Choose Flow</h3>
+                       <div className="grid sm:grid-cols-2 gap-6">
+                          <button 
+                            type="button"
+                            onClick={() => setPaymentMode('now')}
+                            className={`p-8 rounded-3xl border-2 transition-all flex flex-col items-center gap-4 ${paymentMode === 'now' ? 'bg-blue-600/10 border-blue-600 shadow-xl' : 'bg-slate-900 border-white/5 hover:border-white/20'}`}
+                          >
+                             <div className={`w-6 h-6 rounded-full border-4 flex items-center justify-center ${paymentMode === 'now' ? 'border-blue-500' : 'border-slate-700'}`}>
+                                {paymentMode === 'now' && <div className="w-2 h-2 bg-blue-500 rounded-full"></div>}
+                             </div>
+                             <div className="text-center">
+                                <p className="font-extrabold text-white uppercase tracking-tighter">Pay Now</p>
+                                <p className="text-[9px] text-slate-500 uppercase font-bold mt-1">Direct Priority Development</p>
+                             </div>
+                          </button>
+                          
+                          <button 
+                            type="button"
+                            onClick={() => setPaymentMode('later')}
+                            className={`p-8 rounded-3xl border-2 transition-all flex flex-col items-center gap-4 ${paymentMode === 'later' ? 'bg-blue-600/10 border-blue-600 shadow-xl' : 'bg-slate-900 border-white/5 hover:border-white/20'}`}
+                          >
+                             <div className={`w-6 h-6 rounded-full border-4 flex items-center justify-center ${paymentMode === 'later' ? 'border-blue-500' : 'border-slate-700'}`}>
+                                {paymentMode === 'later' && <div className="w-2 h-2 bg-blue-500 rounded-full"></div>}
+                             </div>
+                             <div className="text-center">
+                                <p className="font-extrabold text-white uppercase tracking-tighter">Pay Later</p>
+                                <p className="text-[9px] text-slate-500 uppercase font-bold mt-1">Request Quote & Talk</p>
+                             </div>
+                          </button>
+                       </div>
+                    </div>
+
+                    <button type="submit" className="w-full bg-blue-600 text-white py-6 rounded-2xl font-extrabold text-lg uppercase tracking-widest shadow-2xl hover:bg-blue-700 transition-all">
+                      {paymentMode === 'now' ? "Go to Secure Payment" : "Finish Request"}
+                    </button>
+                  </motion.form>
+                ) : (
+                  <motion.div 
+                    key="step1"
+                    initial={{ opacity: 0, y: 10 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    exit={{ opacity: 0, y: -10 }}
+                    className="space-y-12"
+                  >
+                    {!selectedMethodId ? (
+                      <div className="bg-slate-900 p-8 lg:p-12 rounded-[3.5rem] border border-white/5 shadow-3xl">
+                         <div className="text-center mb-10">
+                            <h3 className="text-3xl font-extrabold uppercase tracking-tighter text-white mb-2">Select Your Platform</h3>
+                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Global Encryption Active</p>
+                         </div>
+                         
+                         <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                            {paymentMethods.map(method => (
+                              <button
+                                key={method.id}
+                                onClick={() => setSelectedMethodId(method.id)}
+                                className="group flex flex-col items-center gap-4 p-8 bg-slate-950 border border-white/5 rounded-[2.5rem] transition-all hover:border-blue-500/30 hover:bg-slate-900"
+                              >
+                                 <div className="w-16 h-16 bg-white/5 rounded-2xl p-4 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <img src={method.icon} alt={method.name} className="w-full h-full object-contain" />
+                                 </div>
+                                 <span className="text-xs font-extrabold text-slate-300 uppercase tracking-widest group-hover:text-white">{method.name}</span>
+                              </button>
+                            ))}
+                         </div>
+                      </div>
+                    ) : (
+                      <motion.div 
+                        initial={{ opacity: 0, scale: 0.98 }} 
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-slate-900 p-10 lg:p-14 rounded-[3.5rem] border border-blue-500/20 shadow-3xl relative overflow-hidden"
+                      >
+                         <div className="absolute top-0 right-0 p-8">
+                            <button onClick={() => setSelectedMethodId(null)} className="text-[10px] font-bold text-slate-500 uppercase tracking-widest hover:text-white transition-colors">Switch Provider</button>
+                         </div>
+
+                         <div className="flex items-center gap-6 mb-12">
+                            <div className="w-14 h-14 bg-white/5 rounded-2xl p-3 flex items-center justify-center">
+                               <img src={currentMethod?.icon} alt={currentMethod?.name} className="w-full h-full object-contain" />
+                            </div>
+                            <h4 className="text-4xl font-extrabold text-white tracking-tighter" style={{ color: currentMethod?.color }}>{currentMethod?.name}</h4>
+                         </div>
+
+                         <div className="space-y-12">
+                            <div className="bg-slate-950 border border-white/5 p-8 rounded-[2.5rem] group">
+                               <div className="flex justify-between items-center mb-4">
+                                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Platform Address</span>
+                                  <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">Verified Account</span>
+                               </div>
+                               <div className="flex items-center justify-between gap-6">
+                                  <span className="text-3xl font-extrabold text-white tracking-tighter font-mono">{currentMethod?.number}</span>
+                                  <button 
+                                    onClick={() => handleCopy(currentMethod?.number || '', currentMethod?.id || '')}
+                                    className={`px-8 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all ${copyStatus[currentMethod?.id || ''] ? 'bg-green-600 text-white' : 'bg-blue-600 text-white'}`}
+                                  >
+                                    {copyStatus[currentMethod?.id || ''] ? 'Copied ID' : 'Copy Number'}
+                                  </button>
+                               </div>
+                            </div>
+
+                            <div className="space-y-6">
+                               <p className="text-[10px] font-extrabold text-slate-500 uppercase tracking-[0.2em] text-center">Visual Flow Instructions</p>
+                               <div className="grid md:grid-cols-4 gap-4">
+                                  {currentMethod?.steps.map((step, sIdx) => (
+                                    <div key={sIdx} className="flex flex-col items-center text-center gap-3 p-6 bg-slate-950 border border-white/5 rounded-3xl group hover:border-blue-500/20 transition-all">
+                                       <div className="text-3xl mb-1">{step.icon}</div>
+                                       <div className="w-6 h-6 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center mb-1">{(sIdx + 1).toString().padStart(2, '0')}</div>
+                                       <p className="text-[10px] font-extrabold text-slate-300 uppercase leading-snug tracking-tighter">{step.label}</p>
+                                    </div>
+                                  ))}
+                               </div>
+                            </div>
+
+                            <form onSubmit={handleFinalSubmit} className="space-y-6 pt-6 border-t border-white/5">
+                               <div className="space-y-4">
+                                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-4">After Sending Money, paste the Sender Number or Transaction ID below</label>
+                                  <input 
+                                    required 
+                                    type="text" 
+                                    value={formData.senderNumber}
+                                    onChange={(e) => setFormData({...formData, senderNumber: e.target.value})}
+                                    className="w-full bg-slate-950 border border-blue-500/30 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 transition-all text-xl font-bold font-mono placeholder:text-slate-800" 
+                                    placeholder="Enter details..." 
+                                  />
+                               </div>
+                               
+                               <div className="flex gap-4">
+                                  <button type="button" onClick={() => setSelectedMethodId(null)} className="w-1/3 py-6 rounded-2xl font-bold uppercase text-xs tracking-widest border border-white/5 text-slate-500 hover:text-white transition-all">Go Back</button>
+                                  <button type="submit" className="flex-grow bg-blue-600 text-white py-6 rounded-2xl font-extrabold text-lg uppercase tracking-widest shadow-2xl hover:bg-blue-700 transition-all">Confirm Order Payment</button>
+                               </div>
+                            </form>
+                         </div>
+                      </motion.div>
+                    )}
                   </motion.div>
                 )}
-
-                {/* COMPACT PAYMENT SECTION */}
-                <div className="bg-slate-900 border border-white/5 p-6 md:p-8 rounded-[2.5rem] space-y-6 shadow-2xl relative overflow-hidden">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <h3 className="text-lg font-black uppercase italic tracking-tighter text-blue-500 flex items-center gap-2">
-                      <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
-                      Payment Instructions
-                    </h3>
-                  </div>
-
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    {/* Bkash/Nagad */}
-                    <div className="bg-slate-950/50 p-5 rounded-2xl border border-white/5 group transition-all hover:border-blue-500/20">
-                      <p className="text-[10px] font-black uppercase tracking-widest mb-2">
-                        <span className="text-[#D12053]">Bkash</span>
-                        <span className="text-slate-500 mx-1">/</span>
-                        <span className="text-[#F7941D]">Nagad</span>
-                      </p>
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="text-xl font-black text-white tracking-tighter">{paymentDetails.wallet}</span>
-                        <button type="button" onClick={() => handleCopy(paymentDetails.wallet, 'wallet')} className={`shrink-0 px-4 py-1.5 rounded-lg text-[8px] font-black uppercase transition-all ${copyStatus['wallet'] ? 'bg-green-600 text-white' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>
-                          {copyStatus['wallet'] ? 'Copied' : 'Copy'}
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Bank 1: Islami */}
-                    <div className="bg-slate-950/50 p-5 rounded-2xl border border-emerald-500/10 transition-all hover:border-emerald-500/30">
-                      <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2">Islami Bank</p>
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-[11px] font-bold text-slate-300 truncate pr-2">{paymentDetails.islami}</span>
-                        <button type="button" onClick={() => handleCopy(paymentDetails.islami, 'islami')} className={`shrink-0 px-3 py-1.5 rounded-lg text-[8px] font-black uppercase transition-all ${copyStatus['islami'] ? 'bg-green-600 text-white' : 'bg-white/5 text-slate-400 hover:text-white'}`}>
-                          {copyStatus['islami'] ? '✓' : 'Copy'}
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Bank 2: Sonali */}
-                    <div className="bg-slate-950/50 p-5 rounded-2xl border border-yellow-500/10 transition-all hover:border-yellow-500/30">
-                      <p className="text-[10px] font-black text-yellow-500 uppercase tracking-widest mb-2">Sonali Bank</p>
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-[11px] font-bold text-slate-300 truncate pr-2">{paymentDetails.sonali}</span>
-                        <button type="button" onClick={() => handleCopy(paymentDetails.sonali, 'sonali')} className={`shrink-0 px-3 py-1.5 rounded-lg text-[8px] font-black uppercase transition-all ${copyStatus['sonali'] ? 'bg-green-600 text-white' : 'bg-white/5 text-slate-400 hover:text-white'}`}>
-                          {copyStatus['sonali'] ? '✓' : 'Copy'}
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Bank 3: MTB (Same as others) */}
-                    <div className="bg-slate-950/50 p-5 rounded-2xl border border-red-500/10 transition-all hover:border-red-500/30">
-                      <p className="text-[10px] font-black text-red-600 uppercase tracking-widest mb-2">MTB Bank</p>
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-[11px] font-bold text-slate-300 truncate pr-2">{paymentDetails.mtb}</span>
-                        <button type="button" onClick={() => handleCopy(paymentDetails.mtb, 'mtb')} className={`shrink-0 px-3 py-1.5 rounded-lg text-[8px] font-black uppercase transition-all ${copyStatus['mtb'] ? 'bg-green-600 text-white' : 'bg-white/5 text-slate-400 hover:text-white'}`}>
-                          {copyStatus['mtb'] ? '✓' : 'Copy'}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="text-center pt-2">
-                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed max-w-sm mx-auto">
-                      International clients will be contacted through email for payment methods.
-                    </p>
-                  </div>
-                </div>
-
-                {/* IN-FORM SUMMARY */}
-                <div className="bg-slate-900 border border-blue-500/10 p-8 rounded-[3rem] shadow-xl space-y-6">
-                  <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                    <h3 className="text-xl font-black uppercase italic tracking-tighter text-white">Order Summary</h3>
-                    <div className="bg-blue-600/10 px-3 py-1 rounded-full text-[9px] font-black uppercase text-blue-400">Items: {selectedPackages.length + (webMaintenanceService ? 1 : 0)}</div>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    {selectedPackages.map(pkg => (
-                      <div key={pkg.id} className="flex justify-between items-center text-sm">
-                        <span className="text-slate-300 font-bold">{pkg.name}</span>
-                        <span className="text-white font-black">{formatPrice(pkg.price)}</span>
-                      </div>
-                    ))}
-                    {webMaintenanceService && (
-                      <div className="flex justify-between items-center text-sm border-t border-white/5 pt-4">
-                        <span className="text-orange-400 font-bold italic">Care Package (Maintenance)</span>
-                        <span className="text-white font-black">{formatPrice(500)}</span>
-                      </div>
-                    )}
-                    <div className="pt-6 border-t border-white/20 flex justify-between items-end">
-                      <span className="text-xl font-black uppercase italic text-white tracking-tighter">Total Investment</span>
-                      <span className="text-4xl font-black text-blue-500 tracking-tighter">{formatPrice(calculateTotal())}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex justify-center">
-                  <button type="submit" className="w-[70%] bg-blue-600 text-white py-6 rounded-2xl font-black text-lg uppercase tracking-widest shadow-2xl hover:bg-blue-700 transition-all hover:scale-[1.02] active:scale-95">
-                    Confirm & Start Project
-                  </button>
-                </div>
-              </form>
+              </AnimatePresence>
             )}
           </div>
 
-          {/* SIDEBAR SUMMARY (Desktop Only) */}
           <div className="lg:col-span-2 hidden lg:block">
             <div className="bg-slate-900 p-10 rounded-[3rem] border border-white/5 sticky top-28 shadow-2xl">
-              <div className="flex justify-between items-center mb-10">
-                <h2 className="text-2xl font-black uppercase italic tracking-tighter text-white">Review</h2>
-                <button onClick={resetCart} className="text-[8px] font-black uppercase text-red-500 border border-red-500/20 px-3 py-1 rounded-full hover:bg-red-500 hover:text-white transition-colors">Clear</button>
-              </div>
+              <h2 className="text-2xl font-extrabold uppercase tracking-tighter text-white mb-10">Review</h2>
               
               <div className="space-y-6">
                 <AnimatePresence>
                   {selectedPackages.map(pkg => (
-                    <motion.div key={pkg.id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="flex justify-between items-start group">
+                    <motion.div key={pkg.id} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="flex justify-between items-start group">
                       <div className="flex-grow">
-                        <p className="font-black text-white uppercase text-sm tracking-tight">{pkg.name}</p>
-                        <p className="text-[8px] text-slate-500 uppercase mt-1">{pkg.category} Service</p>
+                        <p className="font-extrabold text-white uppercase text-sm tracking-tight">{pkg.name}</p>
+                        <p className="text-[8px] text-slate-500 uppercase mt-1 font-bold">Priority {pkg.category}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-black text-white text-lg">{formatPrice(pkg.price)}</p>
-                        <button onClick={() => removePackage(pkg.id)} className="text-[8px] font-black text-red-500 uppercase mt-1 opacity-0 group-hover:opacity-100 transition-all">Remove</button>
+                        <p className="font-bold text-white text-lg">{formatPrice(pkg.price)}</p>
+                        {step === 0 && <button onClick={() => removePackage(pkg.id)} className="text-[8px] font-bold text-red-500 uppercase mt-1 opacity-0 group-hover:opacity-100 transition-all">Remove</button>}
                       </div>
                     </motion.div>
                   ))}
@@ -370,16 +470,19 @@ const Order: React.FC = () => {
                 {webMaintenanceService && (
                   <div className="pt-6 border-t border-white/5 flex justify-between items-center">
                     <div>
-                      <p className="text-[10px] font-black uppercase text-orange-400 tracking-widest">Care Package</p>
-                      <button onClick={() => setWebMaintenanceService(false)} className="text-[8px] font-black text-red-500 uppercase mt-1">Remove</button>
+                      <p className="text-[10px] font-bold uppercase text-orange-400 tracking-widest">Maintenance Service</p>
+                      {step === 0 && <button onClick={() => setWebMaintenanceService(false)} className="text-[8px] font-bold text-red-500 uppercase mt-1">Remove</button>}
                     </div>
-                    <p className="font-black text-white text-sm">{formatPrice(500)}</p>
+                    <p className="font-bold text-white text-sm">{formatPrice(500)}</p>
                   </div>
                 )}
 
                 <div className="pt-8 border-t border-white/20 text-center">
-                  <p className="text-[8px] text-slate-500 uppercase tracking-widest mb-2">Project Total</p>
-                  <p className="text-5xl font-black text-blue-500 tracking-tighter">{formatPrice(calculateTotal())}</p>
+                  <p className="text-[8px] text-slate-500 uppercase tracking-widest mb-2 font-bold">Total Bill</p>
+                  <p className="text-5xl font-extrabold text-blue-500 tracking-tighter">{formatPrice(calculateTotal())}</p>
+                  <div className="mt-8 p-5 bg-white/5 rounded-[2rem]">
+                     <p className="text-[9px] text-slate-500 uppercase font-bold tracking-widest leading-relaxed">Infrastructure verified. Priority deployment protocols active.</p>
+                  </div>
                 </div>
               </div>
             </div>

@@ -16,7 +16,7 @@ const GraphicsGallery: React.FC = () => {
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-6xl lg:text-9xl font-black text-white mb-8 tracking-tighter uppercase italic leading-none"
+            className="text-6xl lg:text-9xl font-black text-white mb-8 tracking-tighter uppercase leading-none"
           >
             Visual <br /> <span className="text-gradient">Work.</span>
           </motion.h1>
@@ -51,7 +51,7 @@ const GraphicsGallery: React.FC = () => {
                 <div className="absolute inset-0 bg-teal-500/0 group-hover:bg-teal-500/10 transition-all flex items-end p-8">
                   <div className="bg-slate-950/80 backdrop-blur-md p-6 rounded-2xl w-full border border-white/5 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
                     <span className="text-[8px] font-black text-teal-400 uppercase tracking-widest mb-1 block">{item.category}</span>
-                    <h3 className="text-lg font-black text-white uppercase italic tracking-tighter leading-none">{item.title}</h3>
+                    <h3 className="text-lg font-black text-white uppercase tracking-tighter leading-none">{item.title}</h3>
                   </div>
                 </div>
               </div>
@@ -60,7 +60,7 @@ const GraphicsGallery: React.FC = () => {
         </div>
 
         <div className="mt-32 text-center p-20 border-t border-white/5">
-           <h2 className="text-3xl font-black uppercase italic mb-8">Need custom visuals?</h2>
+           <h2 className="text-3xl font-black uppercase mb-8">Need custom visuals?</h2>
            <a href="https://wa.me/8801939888381" target="_blank" className="bg-teal-600 text-white px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-xs inline-block hover:bg-teal-700 transition-all shadow-xl">Contact Senior Designer</a>
         </div>
       </div>

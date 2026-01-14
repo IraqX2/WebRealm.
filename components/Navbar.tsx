@@ -11,7 +11,8 @@ const Navbar: React.FC = () => {
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
-  const { selectedPackage, language, setLanguage } = useCart();
+  // Fix: changed selectedPackage to selectedPackages as defined in CartContextType
+  const { selectedPackages, language, setLanguage } = useCart();
   const t = TRANSLATIONS[language];
 
   const languages: { code: LanguageCode; name: string }[] = [
@@ -103,7 +104,8 @@ const Navbar: React.FC = () => {
               className="bg-blue-600 text-white px-8 py-3 rounded-lg text-xs font-black uppercase tracking-widest hover:bg-blue-700 hover:scale-105 transition-all shadow-xl flex items-center"
             >
               {t.nav?.btn || 'Get a Website'}
-              {selectedPackage && (
+              {/* Fix: check if selectedPackages array has items */}
+              {selectedPackages && selectedPackages.length > 0 && (
                 <span className="ml-2 w-1.5 h-1.5 bg-teal-300 rounded-full animate-pulse"></span>
               )}
             </Link>

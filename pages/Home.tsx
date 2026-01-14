@@ -39,7 +39,7 @@ const Home: React.FC = () => {
               <span className="inline-block px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/5 text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] mb-8">
                 Official Web Building Studio
               </span>
-              <h1 className="text-5xl lg:text-7xl font-black leading-[1.05] mb-8 tracking-tighter uppercase italic">
+              <h1 className="text-5xl lg:text-7xl font-black leading-[1.05] mb-8 tracking-tighter uppercase">
                 Get Your <br />
                 <span className="text-gradient">Custom</span> <br />
                 <span className="text-white">Website.</span>
@@ -77,7 +77,7 @@ const Home: React.FC = () => {
       <section id="pricing" className="py-24 bg-slate-900/20 border-y border-white/5 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <h2 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase italic mb-6">Choose Your Packages</h2>
+            <h2 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase mb-6">Choose Your Packages</h2>
             <p className={`text-slate-500 uppercase tracking-widest text-xs font-bold max-w-2xl mx-auto ${bnClass}`}>{t.pricingSub}</p>
           </div>
 
@@ -91,7 +91,7 @@ const Home: React.FC = () => {
                 {pkg.highlighted && (
                    <div className="absolute top-0 right-0 bg-blue-600 text-white text-[8px] font-black uppercase px-6 py-2 rounded-bl-2xl tracking-widest">Most Popular</div>
                 )}
-                <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white mb-2">{pkg.name}</h3>
+                <h3 className="text-2xl font-black uppercase tracking-tighter text-white mb-2">{pkg.name}</h3>
                 <div className="text-4xl font-black text-blue-500 mb-6 tracking-tighter">
                   {formatPrice(pkg.price)}
                 </div>
@@ -120,7 +120,7 @@ const Home: React.FC = () => {
       <section className="py-24 bg-slate-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <h2 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase italic mb-6 text-teal-500">Graphics Designing</h2>
+            <h2 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase mb-6 text-teal-500">Graphics Designing</h2>
             <p className="text-slate-500 uppercase tracking-widest text-xs font-bold max-w-2xl mx-auto">Elite visual solutions for your social presence.</p>
           </div>
 
@@ -131,7 +131,7 @@ const Home: React.FC = () => {
                 whileHover={{ y: -10 }}
                 className={`p-12 rounded-[3.5rem] border ${pkg.highlighted ? 'border-teal-500/50 bg-slate-900 shadow-2xl scale-105 z-10' : 'border-white/5 bg-slate-950'} flex flex-col transition-all duration-500 relative overflow-hidden`}
               >
-                <h3 className="text-3xl font-black uppercase italic tracking-tighter text-white mb-3">{pkg.name}</h3>
+                <h3 className="text-3xl font-black uppercase tracking-tighter text-white mb-3">{pkg.name}</h3>
                 <div className="text-5xl font-black text-teal-500 mb-8 tracking-tighter">{formatPrice(pkg.price)}</div>
                 <p className="text-xs text-slate-500 font-bold uppercase mb-10 tracking-widest">{pkg.description}</p>
                 <ul className="space-y-4 mb-12 flex-grow">
@@ -159,7 +159,7 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
             <div className="max-w-xl">
-              <h2 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase italic leading-none mb-4">Our Best Work</h2>
+              <h2 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase leading-none mb-4">Our Best Work</h2>
               <p className={`text-slate-400 text-base font-medium leading-relaxed ${bnClass}`}>{t.successSub}</p>
             </div>
             <Link to="/clients" className="bg-white/5 border border-white/10 text-white px-10 py-4 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-white/10 transition-all">View All Examples</Link>
@@ -180,7 +180,7 @@ const Home: React.FC = () => {
                 </div>
                 <div className="p-6">
                    <div className="flex justify-between items-center mb-2">
-                     <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white">{project.title}</h3>
+                     <h3 className="text-2xl font-black uppercase tracking-tighter text-white">{project.title}</h3>
                      <svg className="w-5 h-5 text-blue-500 opacity-0 group-hover:opacity-100 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                    </div>
                    <p className="text-slate-500 text-xs leading-relaxed mb-4">{project.description}</p>
@@ -200,7 +200,7 @@ const Home: React.FC = () => {
       <section className="py-24 bg-slate-900/10 border-t border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-5xl font-black tracking-tighter uppercase italic mb-4">How it works</h2>
+            <h2 className="text-3xl lg:text-5xl font-black tracking-tighter uppercase mb-4">How it works</h2>
             <p className={`text-slate-500 uppercase tracking-[0.2em] text-[10px] font-bold ${bnClass}`}>{t.orderPathSub}</p>
           </div>
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
@@ -211,8 +211,8 @@ const Home: React.FC = () => {
               { num: "04", title: "Go Live", desc: t.step4 }
             ].map((step, i) => (
               <div key={i} className="p-8 bg-slate-950 border border-white/5 rounded-[2rem] hover:border-blue-500/20 transition-all">
-                <div className="text-xl font-black text-blue-600 mb-4 italic">{step.num}</div>
-                <h3 className="text-lg font-black uppercase italic mb-3 tracking-tighter">{step.title}</h3>
+                <div className="text-xl font-black text-blue-600 mb-4">{step.num}</div>
+                <h3 className="text-lg font-black uppercase mb-3 tracking-tighter">{step.title}</h3>
                 <p className={`text-[12px] text-slate-500 font-medium leading-relaxed ${bnClass}`}>{step.desc}</p>
               </div>
             ))}
@@ -229,7 +229,7 @@ const Home: React.FC = () => {
           viewport={{ once: true }}
           className="max-w-4xl mx-auto px-4"
         >
-          <h2 className="text-5xl lg:text-8xl font-black tracking-tighter italic uppercase leading-none mb-10">BUILD YOUR <br /> <span className="text-gradient">FUTURE.</span></h2>
+          <h2 className="text-5xl lg:text-8xl font-black tracking-tighter uppercase leading-none mb-10">BUILD YOUR <br /> <span className="text-gradient">FUTURE.</span></h2>
           <Link to="/order" className="bg-blue-600 text-white px-16 py-6 rounded-2xl font-black text-lg uppercase tracking-widest shadow-2xl hover:bg-blue-700 transition-all inline-block hover:-translate-y-2">Order Your Site</Link>
         </motion.div>
       </section>

@@ -16,7 +16,7 @@ const Clients: React.FC = () => {
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-5xl lg:text-8xl font-black text-white mb-8 tracking-tighter uppercase italic"
+            className="text-5xl lg:text-8xl font-black text-white mb-8 tracking-tighter uppercase"
           >
             Client Success
           </motion.h1>
@@ -48,7 +48,7 @@ const Clients: React.FC = () => {
                     <span key={tag} className="text-[10px] font-black uppercase text-blue-400 bg-blue-400/10 px-4 py-1.5 rounded-full border border-blue-400/20">{tag}</span>
                   ))}
                 </div>
-                <h2 className="text-4xl lg:text-5xl font-black uppercase italic tracking-tighter text-white">{project.title}</h2>
+                <h2 className="text-4xl lg:text-5xl font-black uppercase tracking-tighter text-white">{project.title}</h2>
                 <p className="text-slate-400 text-lg font-medium leading-relaxed">
                   {project.description} This asset was engineered to prioritize load speed and high-intent user conversion, ensuring a seamless digital experience across all platforms.
                 </p>
