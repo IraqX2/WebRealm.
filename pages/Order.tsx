@@ -111,7 +111,7 @@ const Order: React.FC = () => {
 
   const generateOrderId = () => `WR-${Math.floor(10000 + Math.random() * 90000)}`;
 
-  const submitOrder = () => {
+  const submitOrder = async () => {
     const newId = generateOrderId();
     setOrderId(newId);
 
@@ -126,15 +126,19 @@ const Order: React.FC = () => {
       senderNumber: formData.senderNumber
     };
 
-    // Transition to success screen INSTANTLY
+    // Transition to success screen
     setStep(2);
 
-    // Fix: Using absolute URL to ensure request bypasses HashRouter and hits the Worker directly
-    fetch('https://webrealmed.com/api/send-order', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(orderData)
-    }).catch(err => console.error("Email failed in background", err));
+    try {
+      // Relative path is required for Cloudflare Pages Functions to route correctly on the same domain
+      await fetch('/api/send-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+    } catch (err) {
+      console.error("Critical: Email notification failed", err);
+    }
   };
 
   const handleNextStep = (e: React.FormEvent) => {
@@ -170,32 +174,30 @@ const Order: React.FC = () => {
               : "Payment details submitted! Our team will verify and reach out to begin your project."}
           </p>
 
-          {paymentMode === 'later' && (
-            <div className="space-y-8 mb-12">
-              <div className="bg-slate-950 border border-white/5 p-6 rounded-3xl max-w-md mx-auto">
-                <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-widest">Policy Hub</p>
-                <p className="text-xs text-slate-300 mt-2 font-medium">Half of the payment for services must be done before the work starts because hosting and other work related pays are included in that.</p>
-              </div>
-              
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <a 
-                  href="https://wa.me/8801939888381" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-4 bg-emerald-600 text-white px-10 py-5 rounded-2xl font-bold uppercase tracking-widest text-xs shadow-2xl hover:bg-emerald-700 transition-all hover:scale-105"
-                >
-                  <img src="https://img.icons8.com/color/48/000000/whatsapp--v1.png" className="w-6 h-6" alt="WhatsApp" />
-                  WhatsApp Now
-                </a>
-                <a 
-                  href="mailto:ikraismam23@gmail.com" 
-                  className="inline-flex items-center justify-center gap-4 bg-slate-800 text-white px-10 py-5 rounded-2xl font-bold uppercase tracking-widest text-xs border border-white/10 hover:bg-slate-700 transition-all"
-                >
-                  Email Support
-                </a>
-              </div>
+          <div className="space-y-8 mb-12">
+            <div className="bg-slate-950 border border-white/5 p-6 rounded-3xl max-w-md mx-auto">
+              <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-widest">Policy Hub</p>
+              <p className="text-xs text-slate-300 mt-2 font-medium">Half of the payment for services must be done before the work starts because hosting and other work related pays are included in that.</p>
             </div>
-          )}
+            
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <a 
+                href="https://wa.me/8801939888381" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-4 bg-emerald-600 text-white px-10 py-5 rounded-2xl font-bold uppercase tracking-widest text-xs shadow-2xl hover:bg-emerald-700 transition-all hover:scale-105"
+              >
+                <img src="https://img.icons8.com/color/48/000000/whatsapp--v1.png" className="w-6 h-6" alt="WhatsApp" />
+                WhatsApp Now
+              </a>
+              <a 
+                href="mailto:ikraismam23@gmail.com" 
+                className="inline-flex items-center justify-center gap-4 bg-slate-800 text-white px-10 py-5 rounded-2xl font-bold uppercase tracking-widest text-xs border border-white/10 hover:bg-slate-700 transition-all"
+              >
+                Email Support
+              </a>
+            </div>
+          </div>
 
           <div className="flex justify-center gap-4">
             <button onClick={() => { resetCart(); navigate('/'); }} className="bg-blue-600 px-12 py-5 rounded-2xl font-bold uppercase tracking-widest text-xs text-white shadow-2xl hover:bg-blue-700 transition-all">Back to Home</button>
@@ -449,7 +451,10 @@ const Order: React.FC = () => {
 
           <div className="lg:col-span-2 hidden lg:block">
             <div className="bg-slate-900 p-10 rounded-[3rem] border border-white/5 sticky top-28 shadow-2xl">
-              <h2 className="text-2xl font-extrabold uppercase tracking-tighter text-white mb-10">Review</h2>
+              <div className="flex justify-between items-center mb-10">
+                <h2 className="text-2xl font-extrabold uppercase tracking-tighter text-white">Review</h2>
+                <Link to="/pricing" className="text-[10px] font-bold text-blue-500 uppercase tracking-widest hover:text-blue-400 transition-colors">Add More Services</Link>
+              </div>
               
               <div className="space-y-6">
                 <AnimatePresence>
