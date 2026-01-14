@@ -22,12 +22,6 @@ A premium, high-value React application built with TypeScript, Tailwind CSS, and
    npm run dev
    ```
 
-## Netlify Deployment
-
-To ensure Netlify Forms works:
-1. Build the project: `npm run build`.
-2. Deploy the `dist` folder to Netlify.
-3. Form notifications can be configured in the Netlify Dashboard under **Site Settings > Forms > Form notifications**.
 
 ## Customizing
 
