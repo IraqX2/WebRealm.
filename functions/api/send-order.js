@@ -9,28 +9,32 @@ export async function onRequest(context) {
     "Access-Control-Allow-Headers": "Content-Type"
   };
 
+  // Handle preflight
   if (request.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: responseHeaders });
   }
 
   if (request.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Only POST allowed" }), { status: 405, headers: responseHeaders });
+    return new Response(JSON.stringify({ error: "Only POST allowed" }), { 
+      status: 405, 
+      headers: responseHeaders 
+    });
   }
 
   try {
     const data = await request.json();
-    console.log("Order Triggered:", data.orderId);
+    console.log("Order Received:", data.orderId);
     
     const { orderId, customer, items, total, paymentMode, senderNumber } = data;
     const timestamp = new Date().toISOString();
 
     const adminEmailPayload = {
       personalizations: [{ to: [{ email: "ikraismam23@gmail.com" }] }],
-      from: { email: "automated@webrealm.io", name: "WebRealm System" },
+      from: { email: "orders@webrealm.io", name: "WebRealm Automator" },
       subject: `[ORDER] ${orderId} - ${customer.fullName}`,
       content: [{
         type: "text/plain",
-        value: `ID: ${orderId}\nCustomer: ${customer.fullName}\nPhone: ${customer.phone}\nBusiness: ${customer.business}\nBrief: ${customer.details}\nTotal: ${total} BDT\nMode: ${paymentMode}\nTXN: ${senderNumber || 'N/A'}`
+        value: `Order ID: ${orderId}\nCustomer: ${customer.fullName}\nEmail: ${customer.email}\nPhone: ${customer.phone}\nBusiness: ${customer.business}\nDetails: ${customer.details}\nTotal: ${total} BDT\nMode: ${paymentMode}\nSender/TXN: ${senderNumber || 'N/A'}`
       }]
     };
 
@@ -42,9 +46,9 @@ export async function onRequest(context) {
     });
 
     if (!mailResponse.ok) {
-      const errorText = await mailResponse.text();
-      console.error("MailChannels Error:", errorText);
-      throw new Error(`Mail failed: ${mailResponse.status}`);
+      const errorBody = await mailResponse.text();
+      console.error("MailChannels Error:", errorBody);
+      throw new Error(`Email System Error: ${mailResponse.status}`);
     }
 
     return new Response(JSON.stringify({ success: true, orderId, timestamp }), {
@@ -53,7 +57,10 @@ export async function onRequest(context) {
     });
 
   } catch (err) {
-    console.error("Function Error:", err.message);
-    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: responseHeaders });
+    console.error("Execution Error:", err.message);
+    return new Response(JSON.stringify({ error: err.message }), { 
+      status: 500,
+      headers: responseHeaders
+    });
   }
 }

@@ -1,14 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebRealm | Custom High-Performance Web Development</title>
-    <meta name="description" content="Custom-built, high-tech websites for premium brands. No templates. Pure performance. Built with HTML, CSS, and JavaScript.">
-    <!-- Open Graph -->
-    <meta property="og:title" content="WebRealm - Custom High-Performance Web Development">
-    <meta property="og:description" content="WebRealm sells custom-coded high-value websites. Strategy, Design, and Development for serious brands.">
-    <meta property="og:type" content="website">
+    <meta name="description" content="Custom-built, high-tech websites for premium brands. Pure performance. Built with React and Tailwind.">
+    <!-- Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -17,42 +15,19 @@
             scroll-behavior: smooth;
             background-color: #020617; /* Slate-950 */
         }
-        
-        /* Specialized Bangla Font Class */
-        .font-bn {
-            font-family: 'Hind Siliguri', sans-serif !important;
-            line-height: 1.6;
-        }
-
-        .bg-glass {
-            background: rgba(2, 6, 23, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-        }
-        
-        /* Fixed clipping for italic gradient text */
+        .font-bn { font-family: 'Hind Siliguri', sans-serif !important; line-height: 1.6; }
+        .bg-glass { background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
         .text-gradient {
             background: linear-gradient(135deg, #60a5fa 0%, #2dd4bf 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             display: inline-block;
-            padding-right: 0.15em; /* Prevents italic slant from clipping */
+            padding-right: 0.15em;
             margin-right: -0.15em;
         }
-        
-        .premium-border {
-            border: 1px solid rgba(59, 130, 246, 0.2);
-        }
-        .glow-blue {
-          box-shadow: 0 0 20px rgba(37, 99, 235, 0.15);
-        }
-
-        /* Utility for normal feature text */
-        .feature-text {
-            font-weight: 400 !important;
-            letter-spacing: normal !important;
-            text-transform: none !important;
-        }
+        .premium-border { border: 1px solid rgba(59, 130, 246, 0.2); }
+        .glow-blue { box-shadow: 0 0 20px rgba(37, 99, 235, 0.15); }
+        .feature-text { font-weight: 400 !important; letter-spacing: normal !important; text-transform: none !important; }
     </style>
 <script type="importmap">
 {
@@ -61,7 +36,11 @@
     "framer-motion": "https://esm.sh/framer-motion@^12.23.26",
     "react/": "https://esm.sh/react@^19.2.3/",
     "react": "https://esm.sh/react@^19.2.3",
-    "react-router-dom": "https://esm.sh/react-router-dom@^7.11.0"
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.11.0",
+    "path": "https://esm.sh/path@^0.12.7",
+    "url": "https://esm.sh/url@^0.11.4",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
   }
 }
 </script>
@@ -69,6 +48,6 @@
 </head>
 <body class="text-slate-100 selection:bg-blue-500/30">
     <div id="root"></div>
-<script type="module" src="/index.tsx"></script>
+    <script type="module" src="/index.tsx"></script>
 </body>
 </html>
