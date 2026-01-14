@@ -9,6 +9,7 @@ const Order: React.FC = () => {
   const { 
     selectedPackages, 
     webMaintenanceService, 
+    domainPrice,
     calculateTotal,
     resetCart,
     removePackage,
@@ -90,14 +91,64 @@ const Order: React.FC = () => {
     return encodeURIComponent(text);
   };
 
-  const handleFinalProcess = () => {
+  
+  const buildOrderPayload = (id: string) => {
+    const items = [
+      ...selectedPackages.map(p => ({
+        id: p.id,
+        name: p.name,
+        price: typeof p.price === 'number' ? p.price : 0
+      })),
+      ...(webMaintenanceService ? [{ id: 'maintenance', name: 'Monthly Modification & Maintenance', price: 500 }] : []),
+      ...(domainPrice ? [{ id: 'domain', name: 'Domain', price: domainPrice }] : [])
+    ];
+
+    return {
+      orderId: id,
+      customer: {
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        business: formData.business,
+        details: formData.details
+      },
+      items,
+      total: calculateTotal(),
+      paymentMode,
+      paymentMethod: currentMethod ? currentMethod.name : null,
+      senderNumber: formData.senderNumber
+    };
+  };
+
+  const submitOrder = async (id: string) => {
+    const res = await fetch('/api/send-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(buildOrderPayload(id))
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(data?.error || 'Order sync failed');
+    }
+    return data;
+  };
+const handleFinalProcess = async () => {
     setIsSubmitting(true);
     const newId = generateOrderId();
     setOrderId(newId);
-    setTimeout(() => {
+
+    try {
+      await submitOrder(newId);
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setStep(2);
+      }, 2200);
+    } catch (err: any) {
+      console.error(err);
       setIsSubmitting(false);
-      setStep(2);
-    }, 2200);
+      alert(err?.message || "Order sync failed. Please try again.");
+    }
   };
 
   const handleNextStep = (e: React.FormEvent) => {
@@ -106,7 +157,7 @@ const Order: React.FC = () => {
       alert("Required: Identification and Mobile Contact.");
       return;
     }
-    paymentMode === 'now' ? setStep(1) : handleFinalProcess();
+    paymentMode === 'now' ? setStep(1) : void handleFinalProcess();
   };
 
   if (step === 2) {
@@ -275,7 +326,7 @@ const Order: React.FC = () => {
                                 <label className="text-[10px] font-black uppercase text-slate-500 ml-2">Verification Input (TrxID / Phone)</label>
                                 <input required placeholder="Paste Identifier Code" className="w-full bg-slate-900 border border-white/10 px-8 py-5 rounded-2xl text-white font-bold outline-none focus:border-blue-500" value={formData.senderNumber} onChange={e => setFormData({...formData, senderNumber: e.target.value})} />
                               </div>
-                              <button onClick={handleFinalProcess} className="w-full bg-blue-600 text-white py-6 rounded-2xl font-black uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all">Verify & Sync Registry</button>
+                              <button onClick={() => void handleFinalProcess()} className="w-full bg-blue-600 text-white py-6 rounded-2xl font-black uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all">Verify & Sync Registry</button>
                             </div>
                           </div>
                         </motion.div>
