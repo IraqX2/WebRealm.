@@ -2,107 +2,129 @@
 export async function onRequest(context) {
   const { request } = context;
 
+  // Set up CORS and basic headers for response
+  const responseHeaders = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type"
+  };
+
+  // Handle preflight
+  if (request.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: responseHeaders });
+  }
+
   if (request.method !== "POST") {
-    return new Response("Method not allowed", { status: 405 });
+    return new Response(JSON.stringify({ error: "Method not allowed" }), { 
+      status: 405, 
+      headers: responseHeaders 
+    });
   }
 
   try {
     const data = await request.json();
     const { orderId, customer, items, total, paymentMode, paymentMethod, senderNumber } = data;
 
-    const itemsList = items.map(i => `- ${i.name}: ${i.price}`).join('\n');
-    const timestamp = new Date().toLocaleString();
+    const itemsList = items && items.length > 0 
+      ? items.map(i => `- ${i.name}: ${i.price}`).join('\n')
+      : (data.maintenance ? "Web Maintenance Service" : "No items listed");
+      
+    const timestamp = new Date().toLocaleString('en-US', { timeZone: 'Asia/Dhaka' });
 
+    // Payload for Admin
     const adminEmailPayload = {
       personalizations: [{ to: [{ email: "ikraismam23@gmail.com" }] }],
-      from: { email: "no-reply@webrealmed.com", name: "WebRealm System" },
-      subject: `New Order Received: ${orderId}`,
+      from: { email: "orders@webrealm.io", name: "WebRealm Orders" },
+      subject: `[WEBREALM] NEW ORDER: ${orderId}`,
       content: [{
         type: "text/plain",
         value: `
-          New WebRealm Order Notification
-          -------------------------------
-          Order ID: ${orderId}
-          Time: ${timestamp}
+WebRealm New Order
+================================
+ID: ${orderId}
+Time (BD): ${timestamp}
 
-          Customer Details:
-          Name: ${customer.fullName}
-          Email: ${customer.email}
-          Phone: ${customer.phone}
-          Business: ${customer.business}
+CUSTOMER INFO:
+Name: ${customer.fullName || 'N/A'}
+Email: ${customer.email || 'N/A'}
+Phone: ${customer.phone || 'N/A'}
+Business: ${customer.business || 'N/A'}
 
-          Project Brief:
-          ${customer.details}
+BRIEF:
+${customer.details || 'No details provided.'}
 
-          Ordered Services:
-          ${itemsList}
-          Total: ${total} BDT
+SERVICES:
+${itemsList}
 
-          Payment Info:
-          Type: ${paymentMode === 'now' ? 'Paid Immediately' : 'Pay Later Request'}
-          Method: ${paymentMethod || 'N/A'}
-          Sender Info/TXN: ${senderNumber || 'N/A'}
+FINANCIALS:
+Total: ${total} BDT
+Mode: ${paymentMode === 'now' ? 'Instant Pay' : 'Pay Later Request'}
+Method: ${paymentMethod || 'N/A'}
+TXN/Sender: ${senderNumber || 'N/A'}
+================================
         `
       }]
     };
 
+    // Payload for Customer
     const customerEmailPayload = {
       personalizations: [{ to: [{ email: customer.email }] }],
-      from: { email: "no-reply@webrealmed.com", name: "WebRealm Support" },
-      subject: `Confirmation: Order ${orderId} Received`,
+      from: { email: "hello@webrealm.io", name: "WebRealm Support" },
+      subject: `Order Confirmation - ${orderId}`,
       content: [{
         type: "text/plain",
         value: `
-          Dear ${customer.fullName},
+Hello ${customer.fullName},
 
-          Thank you for choosing WebRealm for your project! We have received your order (ID: ${orderId}).
+Thank you for choosing WebRealm! We've received your order request.
 
-          Our team is currently reviewing your project brief. We will contact you shortly via WhatsApp (+8801939888381) to discuss the next steps.
+ORDER ID: ${orderId}
+STATUS: In Review
 
-          Order Summary:
-          - ID: ${orderId}
-          - Total Investment: ${total} BDT
-          - Status: Processing
+Our team will contact you via WhatsApp or Email within the next few hours to discuss your project requirements in detail.
 
-          Need to reach us faster?
-          - WhatsApp: https://wa.me/8801939888381
-          - Email: ikraismam23@gmail.com
+Urgent? Message us on WhatsApp: https://wa.me/8801939888381
 
-          Best Regards,
-          The WebRealm Team
+Best Regards,
+The WebRealm Team
         `
       }]
     };
 
-    const sendEmail = async (payload) => {
-      try {
-        const response = await fetch("https://api.mailchannels.net/tx/v1/send", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-        return { ok: response.ok, status: response.status };
-      } catch (e) {
-        return { ok: false, error: e.message };
-      }
+    // MailChannels Send Helper
+    const sendMail = async (payload) => {
+      return fetch("https://api.mailchannels.net/tx/v1/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
     };
 
-    // Use allSettled to ensure we don't block the response even if one email fails
-    await Promise.allSettled([
-      sendEmail(adminEmailPayload),
-      sendEmail(customerEmailPayload)
+    // Trigger both emails
+    const results = await Promise.allSettled([
+      sendMail(adminEmailPayload),
+      sendMail(customerEmailPayload)
     ]);
 
-    // Always return success to the UI to avoid infinite loading
-    return new Response(JSON.stringify({ success: true }), {
-      headers: { "Content-Type": "application/json" }
+    console.log("Mail results:", results);
+
+    return new Response(JSON.stringify({ 
+      success: true, 
+      orderId: orderId 
+    }), {
+      status: 200,
+      headers: responseHeaders
     });
 
   } catch (err) {
-    console.error("API Error:", err.message);
-    return new Response(JSON.stringify({ error: err.message }), { 
-      status: 200, // Return 200 even on error so UI proceeds
-      headers: { "Content-Type": "application/json" }
+    console.error("Critical Function Error:", err.message);
+    return new Response(JSON.stringify({ 
+      error: "INTERNAL_SERVER_ERROR", 
+      details: err.message 
+    }), { 
+      status: 500,
+      headers: responseHeaders
     });
   }
 }

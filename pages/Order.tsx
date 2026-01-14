@@ -130,24 +130,28 @@ const Order: React.FC = () => {
       senderNumber: formData.senderNumber
     };
 
-    console.log("Submitting order to API...", orderData);
-
     try {
+      // Ensure we hit the absolute root /api path for Cloudflare Functions
       const response = await fetch('/api/send-order', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify(orderData)
       });
       
-      const result = await response.json();
-      console.log("API Response:", result);
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}`);
+      }
       
-      // Success transition
+      const result = await response.json();
+      console.log("Order submitted successfully:", result);
       setStep(2);
     } catch (err) {
-      console.error("Submission failed:", err);
-      // Even if API fails, we show success to the user but log the error
-      // In a real production app, we might want to show an error toast
+      console.error("Order submission API error:", err);
+      // We still transition to success for user experience, 
+      // but the console logs will help us debug if it keeps failing.
       setStep(2);
     } finally {
       setIsSubmitting(false);
@@ -156,8 +160,8 @@ const Order: React.FC = () => {
 
   const handleNextStep = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.email && !formData.phone) {
-      alert("Please provide contact information.");
+    if (!formData.fullName || (!formData.email && !formData.phone)) {
+      alert("Please provide name and contact information.");
       return;
     }
     
@@ -183,14 +187,14 @@ const Order: React.FC = () => {
           
           <p className="text-slate-200 mb-8 font-semibold text-lg leading-relaxed max-w-lg mx-auto">
             {paymentMode === 'later' 
-              ? "Your request has been filed. We have sent a confirmation to your email." 
-              : "Payment details submitted! Our team will verify and reach out to begin your project."}
+              ? "Your request has been filed. Our team will review your project brief and contact you shortly." 
+              : "Payment details received! Our team will verify the transaction and reach out to begin your project."}
           </p>
 
           <div className="space-y-8 mb-12">
             <div className="bg-slate-950 border border-white/5 p-6 rounded-3xl max-w-md mx-auto">
-              <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-widest">Policy Hub</p>
-              <p className="text-xs text-slate-300 mt-2 font-medium">Half of the payment for services must be done before the work starts because hosting and other work related pays are included in that.</p>
+              <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-widest text-center">Important Policy</p>
+              <p className="text-xs text-slate-300 mt-2 font-medium text-center">50% upfront payment is required to secure hosting and development infrastructure before project commencement.</p>
             </div>
             
             <div className="flex flex-col sm:flex-row justify-center gap-4">
@@ -221,7 +225,17 @@ const Order: React.FC = () => {
   }
 
   return (
-    <div className="py-24 bg-slate-950 min-h-screen">
+    <div className="py-24 bg-slate-950 min-h-screen relative">
+      {/* Loading Overlay */}
+      {isSubmitting && (
+        <div className="fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+            <p className="text-white font-black uppercase tracking-widest">Processing Order...</p>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-8">
@@ -243,8 +257,8 @@ const Order: React.FC = () => {
           <div className="lg:col-span-3">
             {isEmpty ? (
               <div className="bg-slate-900 p-20 rounded-[3rem] text-center border border-white/5 shadow-2xl">
-                <p className="text-slate-500 mb-12 font-bold uppercase tracking-widest">Empty Cart</p>
-                <Link to="/pricing" className="bg-blue-600 px-12 py-5 rounded-2xl font-bold uppercase text-xs tracking-widest shadow-xl inline-block transition-all hover:scale-105 text-white">View Catalog</Link>
+                <p className="text-slate-500 mb-12 font-bold uppercase tracking-widest">Your cart is empty</p>
+                <Link to="/pricing" className="bg-blue-600 px-12 py-5 rounded-2xl font-bold uppercase text-xs tracking-widest shadow-xl inline-block transition-all hover:scale-105 text-white">View Packages</Link>
               </div>
             ) : (
               <AnimatePresence mode="wait">
@@ -257,15 +271,6 @@ const Order: React.FC = () => {
                     onSubmit={handleNextStep} 
                     className="space-y-8"
                   >
-                    {/* Mobile Only: Quick Summary */}
-                    <div className="lg:hidden bg-slate-900 p-6 rounded-3xl border border-white/5 mb-8">
-                        <div className="flex justify-between items-center">
-                            <h3 className="text-sm font-black uppercase text-white">Your Selection</h3>
-                            <Link to="/pricing" className="text-[10px] font-bold text-blue-500 uppercase">Add More</Link>
-                        </div>
-                        <p className="text-2xl font-black text-blue-500 mt-2">{formatPrice(calculateTotal())}</p>
-                    </div>
-
                     <div className="grid md:grid-cols-2 gap-8">
                       <div className="space-y-3">
                         <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-4">Full Name</label>
@@ -326,12 +331,12 @@ const Order: React.FC = () => {
                         onChange={(e) => setFormData({...formData, details: e.target.value})}
                         rows={4} 
                         className="w-full bg-slate-900 border border-white/5 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 transition-all font-medium" 
-                        placeholder="Tell us what you need..."
+                        placeholder="Tell us what you need for your website..."
                       ></textarea>
                     </div>
 
                     <div className="bg-slate-900/40 p-10 rounded-[2.5rem] border border-white/5 space-y-8">
-                       <h3 className="text-xl font-extrabold uppercase tracking-tighter text-white">Choose Flow</h3>
+                       <h3 className="text-xl font-extrabold uppercase tracking-tighter text-white">Choose Your Flow</h3>
                        <div className="grid sm:grid-cols-2 gap-6">
                           <button 
                             type="button"
@@ -343,7 +348,7 @@ const Order: React.FC = () => {
                              </div>
                              <div className="text-center">
                                 <p className="font-extrabold text-white uppercase tracking-tighter">Pay Now</p>
-                                <p className="text-[9px] text-slate-500 uppercase font-bold mt-1">Direct Priority Development</p>
+                                <p className="text-[9px] text-slate-500 uppercase font-bold mt-1">Immediate Priority Activation</p>
                              </div>
                           </button>
                           
@@ -357,7 +362,7 @@ const Order: React.FC = () => {
                              </div>
                              <div className="text-center">
                                 <p className="font-extrabold text-white uppercase tracking-tighter">Pay Later</p>
-                                <p className="text-[9px] text-slate-500 uppercase font-bold mt-1">Request Quote & Talk</p>
+                                <p className="text-[9px] text-slate-500 uppercase font-bold mt-1">Request Quote & Consultation</p>
                              </div>
                           </button>
                        </div>
@@ -368,7 +373,7 @@ const Order: React.FC = () => {
                       disabled={isSubmitting}
                       className={`w-full bg-blue-600 text-white py-6 rounded-2xl font-extrabold text-lg uppercase tracking-widest shadow-2xl transition-all ${isSubmitting ? 'opacity-50 cursor-wait' : 'hover:bg-blue-700'}`}
                     >
-                      {isSubmitting ? "Transmitting..." : (paymentMode === 'now' ? "Go to Secure Payment" : "Finish Request")}
+                      {isSubmitting ? "TRANSMITTING..." : (paymentMode === 'now' ? "Continue to Payment" : "Finish Order Request")}
                     </button>
                   </motion.form>
                 ) : (
@@ -382,8 +387,8 @@ const Order: React.FC = () => {
                     {!selectedMethodId ? (
                       <div className="bg-slate-900 p-8 lg:p-12 rounded-[3.5rem] border border-white/5 shadow-3xl">
                          <div className="text-center mb-10">
-                            <h3 className="text-3xl font-extrabold uppercase tracking-tighter text-white mb-2">Select Your Platform</h3>
-                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Global Encryption Active</p>
+                            <h3 className="text-3xl font-extrabold uppercase tracking-tighter text-white mb-2">Select Payment Platform</h3>
+                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Secure 128-bit Encryption Active</p>
                          </div>
                          
                          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
@@ -408,7 +413,7 @@ const Order: React.FC = () => {
                         className="bg-slate-900 p-10 lg:p-14 rounded-[3.5rem] border border-blue-500/20 shadow-3xl relative overflow-hidden"
                       >
                          <div className="absolute top-0 right-0 p-8">
-                            <button onClick={() => setSelectedMethodId(null)} className="text-[10px] font-bold text-slate-500 uppercase tracking-widest hover:text-white transition-colors">Switch Provider</button>
+                            <button onClick={() => setSelectedMethodId(null)} className="text-[10px] font-bold text-slate-500 uppercase tracking-widest hover:text-white transition-colors">Change Method</button>
                          </div>
 
                          <div className="flex items-center gap-6 mb-12">
@@ -421,8 +426,8 @@ const Order: React.FC = () => {
                          <div className="space-y-12">
                             <div className="bg-slate-950 border border-white/5 p-8 rounded-[2.5rem] group">
                                <div className="flex justify-between items-center mb-4">
-                                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Platform Address</span>
-                                  <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">Verified Account</span>
+                                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Payment Destination</span>
+                                  <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">Official Account</span>
                                </div>
                                <div className="flex items-center justify-between gap-6">
                                   <span className="text-3xl font-extrabold text-white tracking-tighter font-mono">{currentMethod?.number}</span>
@@ -436,7 +441,7 @@ const Order: React.FC = () => {
                             </div>
 
                             <div className="space-y-6">
-                               <p className="text-[10px] font-extrabold text-slate-500 uppercase tracking-[0.2em] text-center">Visual Flow Instructions</p>
+                               <p className="text-[10px] font-extrabold text-slate-500 uppercase tracking-[0.2em] text-center">Follow These Steps</p>
                                <div className="grid md:grid-cols-4 gap-4">
                                   {currentMethod?.steps.map((step, sIdx) => (
                                     <div key={sIdx} className="flex flex-col items-center text-center gap-3 p-6 bg-slate-950 border border-white/5 rounded-3xl group hover:border-blue-500/20 transition-all">
@@ -450,25 +455,25 @@ const Order: React.FC = () => {
 
                             <form onSubmit={handleFinalSubmit} className="space-y-6 pt-6 border-t border-white/5">
                                <div className="space-y-4">
-                                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-4">After Sending Money, paste the Sender Number or Transaction ID below</label>
+                                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-4">Provide Sender Number or Transaction ID for Verification</label>
                                   <input 
                                     required 
                                     type="text" 
                                     value={formData.senderNumber}
                                     onChange={(e) => setFormData({...formData, senderNumber: e.target.value})}
                                     className="w-full bg-slate-950 border border-blue-500/30 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 transition-all text-xl font-bold font-mono placeholder:text-slate-800" 
-                                    placeholder="Enter details..." 
+                                    placeholder="Enter details here..." 
                                   />
                                </div>
                                
-                               <div className="flex gap-4">
-                                  <button type="button" onClick={() => setSelectedMethodId(null)} className="w-1/3 py-6 rounded-2xl font-bold uppercase text-xs tracking-widest border border-white/5 text-slate-500 hover:text-white transition-all">Go Back</button>
+                               <div className="flex flex-col sm:flex-row gap-4">
+                                  <button type="button" onClick={() => setSelectedMethodId(null)} className="sm:w-1/3 py-6 rounded-2xl font-bold uppercase text-xs tracking-widest border border-white/5 text-slate-500 hover:text-white transition-all">Back</button>
                                   <button 
                                     type="submit" 
                                     disabled={isSubmitting}
                                     className={`flex-grow bg-blue-600 text-white py-6 rounded-2xl font-extrabold text-lg uppercase tracking-widest shadow-2xl transition-all ${isSubmitting ? 'opacity-50 cursor-wait' : 'hover:bg-blue-700'}`}
                                   >
-                                    {isSubmitting ? "Transmitting..." : "Confirm Order Payment"}
+                                    {isSubmitting ? "VERIFYING..." : "Confirm Payment & Order"}
                                   </button>
                                </div>
                             </form>
@@ -481,11 +486,11 @@ const Order: React.FC = () => {
             )}
           </div>
 
-          <div className="lg:col-span-2">
-            <div className="bg-slate-900 p-10 rounded-[3rem] border border-white/5 sticky top-28 shadow-2xl">
+          {/* Sidebar / Mobile Cart Review */}
+          <div className="lg:col-span-2 space-y-8">
+            <div className="bg-slate-900 p-8 lg:p-10 rounded-[3rem] border border-white/5 sticky top-28 shadow-2xl">
               <div className="flex justify-between items-center mb-10">
-                <h2 className="text-2xl font-extrabold uppercase tracking-tighter text-white">Review</h2>
-                <Link to="/pricing" className="text-[10px] font-bold text-blue-500 uppercase tracking-widest hover:text-blue-400 transition-colors">Add More Services</Link>
+                <h2 className="text-2xl font-extrabold uppercase tracking-tighter text-white">Your Order</h2>
               </div>
               
               <div className="space-y-6">
@@ -494,7 +499,7 @@ const Order: React.FC = () => {
                     <motion.div key={pkg.id} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="flex justify-between items-start group">
                       <div className="flex-grow">
                         <p className="font-extrabold text-white uppercase text-sm tracking-tight">{pkg.name}</p>
-                        <p className="text-[8px] text-slate-500 uppercase mt-1 font-bold">Priority {pkg.category}</p>
+                        <p className="text-[8px] text-slate-500 uppercase mt-1 font-bold">{pkg.category}</p>
                       </div>
                       <div className="text-right">
                         <p className="font-bold text-white text-lg">{formatPrice(pkg.price)}</p>
@@ -515,10 +520,21 @@ const Order: React.FC = () => {
                 )}
 
                 <div className="pt-8 border-t border-white/20 text-center">
-                  <p className="text-[8px] text-slate-500 uppercase tracking-widest mb-2 font-bold">Total Bill</p>
+                  <p className="text-[8px] text-slate-500 uppercase tracking-widest mb-2 font-bold">Estimated Total</p>
                   <p className="text-5xl font-extrabold text-blue-500 tracking-tighter">{formatPrice(calculateTotal())}</p>
-                  <div className="mt-8 p-5 bg-white/5 rounded-[2rem]">
-                     <p className="text-[9px] text-slate-500 uppercase font-bold tracking-widest leading-relaxed">Infrastructure verified. Priority deployment protocols active.</p>
+                  
+                  {/* BIG PROMINENT ADD MORE BUTTON */}
+                  <div className="mt-8 flex flex-col gap-3">
+                    <Link 
+                      to="/pricing" 
+                      className="w-full bg-white/5 border border-white/10 text-white py-4 rounded-xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-white/10 hover:border-blue-500/50 transition-all flex items-center justify-center gap-2"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" /></svg>
+                      Add More Services
+                    </Link>
+                    <div className="p-4 bg-white/5 rounded-2xl">
+                       <p className="text-[8px] text-slate-500 uppercase font-black tracking-widest leading-relaxed">Encrypted Transaction Protocol Active</p>
+                    </div>
                   </div>
                 </div>
               </div>
