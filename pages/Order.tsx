@@ -185,7 +185,7 @@ const handleFinalProcess = async () => {
               onClick={() => { resetCart(); navigate('/'); }} 
               className="bg-slate-800 text-white px-12 py-5 rounded-2xl font-black uppercase text-xs tracking-widest border border-white/10"
             >
-              Back to Hub
+              Back to Home
             </button>
           </div>
         </motion.div>
@@ -214,7 +214,7 @@ const handleFinalProcess = async () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-16 flex justify-between items-end">
           <div>
-            <h1 className="text-6xl lg:text-8xl font-black uppercase tracking-tighter text-white">Registry</h1>
+            <h1 className="text-6xl lg:text-8xl font-black uppercase tracking-tighter text-white">Checkout</h1>
             <div className="h-1.5 w-24 bg-blue-600 mt-4 shadow-[0_0_15px_#3b82f6]"></div>
           </div>
         </div>
@@ -223,7 +223,7 @@ const handleFinalProcess = async () => {
           <div className="lg:col-span-3">
             {isEmpty ? (
               <div className="bg-slate-900 p-20 rounded-[4rem] text-center border border-white/5">
-                <p className="text-slate-500 mb-10 font-black uppercase tracking-widest">Registry is Empty</p>
+                <p className="text-slate-500 mb-10 font-black uppercase tracking-widest">Cart is Empty</p>
                 <Link to="/pricing" className="bg-blue-600 text-white px-12 py-5 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl">Browse Packages</Link>
               </div>
             ) : (
@@ -237,37 +237,37 @@ const handleFinalProcess = async () => {
                     <div className="grid md:grid-cols-2 gap-10">
                       <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase text-slate-500 ml-2">Full Name</label>
-                        <input required placeholder="Client Identity" className="w-full bg-slate-950 border border-white/10 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 font-bold transition-all" value={formData.fullName} onChange={e => setFormData({...formData, fullName: e.target.value})} />
+                        <input required placeholder="ex.Syed Iraq" className="w-full bg-slate-950 border border-white/10 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 font-bold transition-all" value={formData.fullName} onChange={e => setFormData({...formData, fullName: e.target.value})} />
                       </div>
                       <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase text-slate-500 ml-2">Brand Name</label>
-                        <input placeholder="Project Label" className="w-full bg-slate-950 border border-white/10 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 font-bold transition-all" value={formData.business} onChange={e => setFormData({...formData, business: e.target.value})} />
+                        <input placeholder="WebRealm" className="w-full bg-slate-950 border border-white/10 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 font-bold transition-all" value={formData.business} onChange={e => setFormData({...formData, business: e.target.value})} />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-slate-500 ml-2">Email Access</label>
-                        <input required type="email" placeholder="Communication Hub" className="w-full bg-slate-950 border border-white/10 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 font-bold transition-all" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                        <label className="text-[10px] font-black uppercase text-slate-500 ml-2">Email Address</label>
+                        <input required type="email" placeholder="ex.ikraismam23@gmail.com" className="w-full bg-slate-950 border border-white/10 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 font-bold transition-all" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
                       </div>
                       <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase text-slate-500 ml-2">WhatsApp / Phone</label>
-                        <input required type="tel" placeholder="Mobile Node" className="w-full bg-slate-950 border border-white/10 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 font-bold transition-all" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+                        <input required type="tel" placeholder="ex.01939888381" className="w-full bg-slate-950 border border-white/10 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 font-bold transition-all" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
                       </div>
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase text-slate-500 ml-2">Project Brief</label>
-                      <textarea required placeholder="Outline your specific requirements..." rows={4} className="w-full bg-slate-950 border border-white/10 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 font-bold transition-all" value={formData.details} onChange={e => setFormData({...formData, details: e.target.value})} />
+                      <textarea required placeholder="Tell us about your business or ask queries if you have any.." rows={4} className="w-full bg-slate-950 border border-white/10 px-8 py-6 rounded-2xl text-white outline-none focus:border-blue-500 font-bold transition-all" value={formData.details} onChange={e => setFormData({...formData, details: e.target.value})} />
                     </div>
                     
                     <div className="flex gap-6">
                       <button type="button" onClick={() => setPaymentMode('now')} className={`flex-1 py-10 rounded-[2.5rem] border-2 transition-all font-black uppercase text-xs tracking-widest ${paymentMode === 'now' ? 'bg-blue-600/10 border-blue-500 text-white shadow-2xl' : 'bg-slate-950 border-white/5 text-slate-500 opacity-60'}`}>
-                        Pay Instantly
+                        Pay Now
                       </button>
                       <button type="button" onClick={() => setPaymentMode('later')} className={`flex-1 py-10 rounded-[2.5rem] border-2 transition-all font-black uppercase text-xs tracking-widest ${paymentMode === 'later' ? 'bg-blue-600/10 border-blue-500 text-white shadow-2xl' : 'bg-slate-950 border-white/5 text-slate-500 opacity-60'}`}>
-                        Inquire First
+                        Pay Later
                       </button>
                     </div>
 
                     <button type="submit" className="w-full bg-blue-600 text-white py-8 rounded-3xl font-black text-xl uppercase tracking-[0.2em] shadow-2xl hover:bg-blue-700 transition-all">
-                      Lock Registry
+                      Confirm Order
                     </button>
                   </motion.form>
                 ) : (
@@ -280,7 +280,7 @@ const handleFinalProcess = async () => {
                        Back to Details
                     </button>
                     
-                    <h3 className="text-3xl font-black text-white uppercase mb-12 tracking-tighter">Secure Gateway</h3>
+                    <h3 className="text-3xl font-black text-white uppercase mb-12 tracking-tighter">Choose Payment Method</h3>
                     
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-16">
                       {paymentMethods.map(m => (
@@ -324,9 +324,9 @@ const handleFinalProcess = async () => {
                               </div>
                               <div className="space-y-2 mb-8">
                                 <label className="text-[10px] font-black uppercase text-slate-500 ml-2">Verification Input (TrxID / Phone)</label>
-                                <input required placeholder="Paste Identifier Code" className="w-full bg-slate-900 border border-white/10 px-8 py-5 rounded-2xl text-white font-bold outline-none focus:border-blue-500" value={formData.senderNumber} onChange={e => setFormData({...formData, senderNumber: e.target.value})} />
+                                <input required placeholder="Paste Number/ID" className="w-full bg-slate-900 border border-white/10 px-8 py-5 rounded-2xl text-white font-bold outline-none focus:border-blue-500" value={formData.senderNumber} onChange={e => setFormData({...formData, senderNumber: e.target.value})} />
                               </div>
-                              <button onClick={() => void handleFinalProcess()} className="w-full bg-blue-600 text-white py-6 rounded-2xl font-black uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all">Verify & Sync Registry</button>
+                              <button onClick={() => void handleFinalProcess()} className="w-full bg-blue-600 text-white py-6 rounded-2xl font-black uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all">Confirm Payment</button>
                             </div>
                           </div>
                         </motion.div>
@@ -346,7 +346,7 @@ const handleFinalProcess = async () => {
                   <div key={pkg.id} className="flex justify-between items-start">
                     <div>
                       <p className="font-black text-white uppercase text-xs tracking-widest">{pkg.name}</p>
-                      <button onClick={() => removePackage(pkg.id)} className="text-[9px] text-red-500 uppercase font-black mt-2">Release</button>
+                      <button onClick={() => removePackage(pkg.id)} className="text-[9px] text-red-500 uppercase font-black mt-2">Remove</button>
                     </div>
                     <p className="font-black text-white text-lg">{formatPrice(pkg.price)}</p>
                   </div>
@@ -360,7 +360,7 @@ const handleFinalProcess = async () => {
                 )}
 
                 <div className="pt-10 border-t border-white/10 text-center">
-                  <p className="text-[10px] text-slate-500 uppercase font-black mb-2 tracking-[0.2em]">Investment Total</p>
+                  <p className="text-[10px] text-slate-500 uppercase font-black mb-2 tracking-[0.2em]">Total Payment</p>
                   <p className="text-6xl font-black text-blue-500 tracking-tighter mb-10">{formatPrice(calculateTotal())}</p>
                   <Link 
                     to="/pricing" 
