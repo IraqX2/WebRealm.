@@ -17,6 +17,7 @@ const Order: React.FC = () => {
   } = useCart();
 
   const [step, setStep] = useState(0); // 0: Details, 1: Payment Selection/Details, 2: Success
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentMode, setPaymentMode] = useState<'now' | 'later'>('later');
   const [copyStatus, setCopyStatus] = useState<Record<string, boolean>>({});
   const [selectedMethodId, setSelectedMethodId] = useState<string | null>(null);
@@ -84,7 +85,7 @@ const Order: React.FC = () => {
         { label: 'Paste 1311003292183', icon: '📋' },
         { label: 'Send', icon: '🚀' }
       ],
-      icon: 'https://img.icons8.com/fluency/48/000000/bank.png'
+      icon: 'https://img.icons8.com/color/48/000000/wallet--v1.png'
     },
     {
       id: 'sonali',
@@ -112,6 +113,9 @@ const Order: React.FC = () => {
   const generateOrderId = () => `WR-${Math.floor(10000 + Math.random() * 90000)}`;
 
   const submitOrder = async () => {
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
     const newId = generateOrderId();
     setOrderId(newId);
 
@@ -126,18 +130,27 @@ const Order: React.FC = () => {
       senderNumber: formData.senderNumber
     };
 
-    // Transition to success screen
-    setStep(2);
+    console.log("Submitting order to API...", orderData);
 
     try {
-      // Relative path is required for Cloudflare Pages Functions to route correctly on the same domain
-      await fetch('/api/send-order', {
+      const response = await fetch('/api/send-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData)
       });
+      
+      const result = await response.json();
+      console.log("API Response:", result);
+      
+      // Success transition
+      setStep(2);
     } catch (err) {
-      console.error("Critical: Email notification failed", err);
+      console.error("Submission failed:", err);
+      // Even if API fails, we show success to the user but log the error
+      // In a real production app, we might want to show an error toast
+      setStep(2);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -244,6 +257,15 @@ const Order: React.FC = () => {
                     onSubmit={handleNextStep} 
                     className="space-y-8"
                   >
+                    {/* Mobile Only: Quick Summary */}
+                    <div className="lg:hidden bg-slate-900 p-6 rounded-3xl border border-white/5 mb-8">
+                        <div className="flex justify-between items-center">
+                            <h3 className="text-sm font-black uppercase text-white">Your Selection</h3>
+                            <Link to="/pricing" className="text-[10px] font-bold text-blue-500 uppercase">Add More</Link>
+                        </div>
+                        <p className="text-2xl font-black text-blue-500 mt-2">{formatPrice(calculateTotal())}</p>
+                    </div>
+
                     <div className="grid md:grid-cols-2 gap-8">
                       <div className="space-y-3">
                         <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-4">Full Name</label>
@@ -341,8 +363,12 @@ const Order: React.FC = () => {
                        </div>
                     </div>
 
-                    <button type="submit" className="w-full bg-blue-600 text-white py-6 rounded-2xl font-extrabold text-lg uppercase tracking-widest shadow-2xl hover:bg-blue-700 transition-all">
-                      {paymentMode === 'now' ? "Go to Secure Payment" : "Finish Request"}
+                    <button 
+                      type="submit" 
+                      disabled={isSubmitting}
+                      className={`w-full bg-blue-600 text-white py-6 rounded-2xl font-extrabold text-lg uppercase tracking-widest shadow-2xl transition-all ${isSubmitting ? 'opacity-50 cursor-wait' : 'hover:bg-blue-700'}`}
+                    >
+                      {isSubmitting ? "Transmitting..." : (paymentMode === 'now' ? "Go to Secure Payment" : "Finish Request")}
                     </button>
                   </motion.form>
                 ) : (
@@ -437,7 +463,13 @@ const Order: React.FC = () => {
                                
                                <div className="flex gap-4">
                                   <button type="button" onClick={() => setSelectedMethodId(null)} className="w-1/3 py-6 rounded-2xl font-bold uppercase text-xs tracking-widest border border-white/5 text-slate-500 hover:text-white transition-all">Go Back</button>
-                                  <button type="submit" className="flex-grow bg-blue-600 text-white py-6 rounded-2xl font-extrabold text-lg uppercase tracking-widest shadow-2xl hover:bg-blue-700 transition-all">Confirm Order Payment</button>
+                                  <button 
+                                    type="submit" 
+                                    disabled={isSubmitting}
+                                    className={`flex-grow bg-blue-600 text-white py-6 rounded-2xl font-extrabold text-lg uppercase tracking-widest shadow-2xl transition-all ${isSubmitting ? 'opacity-50 cursor-wait' : 'hover:bg-blue-700'}`}
+                                  >
+                                    {isSubmitting ? "Transmitting..." : "Confirm Order Payment"}
+                                  </button>
                                </div>
                             </form>
                          </div>
@@ -449,7 +481,7 @@ const Order: React.FC = () => {
             )}
           </div>
 
-          <div className="lg:col-span-2 hidden lg:block">
+          <div className="lg:col-span-2">
             <div className="bg-slate-900 p-10 rounded-[3rem] border border-white/5 sticky top-28 shadow-2xl">
               <div className="flex justify-between items-center mb-10">
                 <h2 className="text-2xl font-extrabold uppercase tracking-tighter text-white">Review</h2>
