@@ -182,9 +182,10 @@ If you need to verify/payment-confirm fast, WhatsApp us: +${supportWhatsApp}
     await sendMail({
       personalizations: [{ to: [{ email: adminEmail }] }],
       from: {
-              email: `orders@${new URL(context.request.url).hostname}`,
-              name: fromName || "WebRealm Orders"
+              email: "ikraismam23@gmail.com",
+              name: "WebRealm Orders"
             },
+
 
       reply_to: { email: customerEmail, name: customerName },
       subject: `[WEBREALM ORDER] ${orderId} - ${customerName}`,
@@ -198,8 +199,8 @@ If you need to verify/payment-confirm fast, WhatsApp us: +${supportWhatsApp}
     await sendMail({
       personalizations: [{ to: [{ email: customerEmail }] }],
       from: {
-              email: `orders@${new URL(context.request.url).hostname}`,
-              name: fromName || "WebRealm Orders"
+              email: "ikraismam23@gmail.com",
+              name: "WebRealm Orders"
             },
 
       reply_to: { email: adminEmail, name: fromName },
