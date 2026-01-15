@@ -1,4 +1,4 @@
-const MAILCHANNELS_ENDPOINT = "https://api.mailchannels.net/tx/v1/send";
+const RESEND_ENDPOINT = "https://api.resend.com/emails";
 
 function jsonResponse(body, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(body), {
@@ -37,16 +37,29 @@ function escapeHtml(str) {
     .replaceAll("'", "&#39;");
 }
 
-async function sendMail(payload) {
-  const res = await fetch(MAILCHANNELS_ENDPOINT, {
+async function sendMail({ from, to, subject, text, html }, env) {
+  if (!env?.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY missing in Cloudflare env vars");
+  }
+
+  const res = await fetch(RESEND_ENDPOINT, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${env.RESEND_API_KEY}`
+    },
+    body: JSON.stringify({
+      from,
+      to: Array.isArray(to) ? to : [to],
+      subject,
+      text,
+      html
+    })
   });
 
   if (!res.ok) {
     const errText = await res.text().catch(() => "");
-    throw new Error(`Mail send failed (${res.status}): ${errText.slice(0, 400)}`);
+    throw new Error(`Resend failed (${res.status}): ${errText.slice(0, 400)}`);
   }
 }
 
@@ -97,11 +110,13 @@ export async function onRequest(context) {
 
   const timestamp = new Date().toISOString();
 
-  // Configure via Cloudflare Pages -> Settings -> Functions -> Variables
+  // From Cloudflare Pages -> Settings -> Variables and Secrets
   const adminEmail = safeStr(env?.ADMIN_EMAIL) || "ikraismam23@gmail.com";
-
   const fromName = safeStr(env?.FROM_NAME) || "WebRealm Orders";
   const supportWhatsApp = safeStr(env?.WHATSAPP_NUMBER) || "8801939888381";
+
+  // IMPORTANT: must match your verified Resend domain: orders.webrealmed.com
+  const from = `${fromName} <orders@orders.webrealmed.com>`;
 
   const itemsText = formatItems(items) || "- (No items provided)";
   const totalText = total !== null ? `${total} BDT` : "N/A";
@@ -159,7 +174,7 @@ ${itemsText}
 
 Total: ${totalText}
 
-If you need to verify/payment-confirm fast, WhatsApp us: +${supportWhatsApp}
+If you need quick verification/payment-confirm fast, WhatsApp us: +${supportWhatsApp}
 `;
 
   const clientHtml = `
@@ -178,42 +193,30 @@ If you need to verify/payment-confirm fast, WhatsApp us: +${supportWhatsApp}
   `;
 
   try {
-    // Admin email
-    await sendMail({
-      personalizations: [{ to: [{ email: adminEmail }] }],
-      from: {
-              email: "ikraismam23@gmail.com",
-              name: "WebRealm Orders"
-            },
+    await sendMail(
+      {
+        from,
+        to: adminEmail,
+        subject: `[WEBREALM ORDER] ${orderId} - ${customerName}`,
+        text: adminText,
+        html: adminHtml
+      },
+      env
+    );
 
-
-      reply_to: { email: customerEmail, name: customerName },
-      subject: `[WEBREALM ORDER] ${orderId} - ${customerName}`,
-      content: [
-        { type: "text/plain", value: adminText },
-        { type: "text/html", value: adminHtml }
-      ]
-    });
-
-    // Client email
-    await sendMail({
-      personalizations: [{ to: [{ email: customerEmail }] }],
-      from: {
-              email: "ikraismam23@gmail.com",
-              name: "WebRealm Orders"
-            },
-
-      reply_to: { email: adminEmail, name: fromName },
-      subject: `WebRealm order received: ${orderId}`,
-      content: [
-        { type: "text/plain", value: clientText },
-        { type: "text/html", value: clientHtml }
-      ]
-    });
+    await sendMail(
+      {
+        from,
+        to: customerEmail,
+        subject: `WebRealm order received: ${orderId}`,
+        text: clientText,
+        html: clientHtml
+      },
+      env
+    );
 
     return jsonResponse({ success: true, orderId, timestamp });
   } catch (err) {
-    console.error("Email send error:", err?.message || err);
     return jsonResponse({ error: err?.message || "Email send failed" }, 500);
   }
 }
