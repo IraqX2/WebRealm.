@@ -20,6 +20,22 @@ const Pricing: React.FC = () => {
     navigate('/order');
   };
 
+  const FREE_HUG_PACKAGE = {
+      id: 'free-hug',
+      name: 'Free Hug Service',
+      price: 0,
+      category: 'fun',
+      description: 'Brotherhood-grade emotional support. Zero charge.',
+      features: [
+        'Only for male clients',
+        'Available in Uttara & Bashundhara',
+        'Cash on Delivery',
+        'One hug per human',
+        'No refunds, no arguments',
+      ],
+    };
+
+
   const bnClass = language === 'BN' ? 'font-bn' : '';
 
   return (
@@ -127,9 +143,70 @@ const Pricing: React.FC = () => {
             </motion.div>
           </div>
         </div>
+
+        {/* Fun Service – Free Hug */}
+        <div className="mb-32">
+          <h2 className="text-3xl font-black uppercase tracking-tighter mb-12 text-center text-slate-300">
+            Brotherhood Services
+          </h2>
+
+          <div className="max-w-lg mx-auto">
+            <motion.div
+              whileHover={{ y: -8 }}
+              className="p-12 rounded-[3.5rem] 
+                        border border-white/10 
+                        bg-gradient-to-br from-slate-900 via-zinc-900 to-slate-950 
+                        shadow-2xl relative overflow-hidden text-center"
+            >
+              <div className="absolute -top-10 -right-10 text-[120px] opacity-[0.06] rotate-12">
+                🤜🤛
+              </div>
+
+              <h3 className="text-3xl font-black uppercase tracking-tighter text-white mb-4">
+                Free Hug Service
+              </h3>
+
+              <div className="text-xl font-black text-emerald-400 mb-6 tracking-wide">
+                0 BDT — Cash On Delivery
+              </div>
+
+              <p className="text-sm text-slate-300 font-medium mb-6 leading-relaxed">
+                  
+                No therapy talk. Just a real hug between brothers.
+                Hug strength varies by mood, weather, and life damage.
+              </p>
+
+              <ul className="space-y-3 mb-10 text-[14px] text-slate-300 text-left">
+                <li>• Only for <b>Male</b> clients</li>
+                <li>• Available in <b>Uttara & Bashundhara</b></li>
+                <li>• Cash on Delivery only</li>
+                <li>• One hug per human</li>
+              </ul>
+
+              <button
+                onClick={() => handleAddPackage(FREE_HUG_PACKAGE)}
+                className="w-full py-5 rounded-2xl 
+                          font-black uppercase text-xs tracking-widest 
+                          bg-emerald-600 text-white 
+                          shadow-xl hover:bg-emerald-700 transition-all"
+              >
+                Add to Cart
+              </button>
+
+              <p className="text-xs text-slate-500 italic mt-6">
+                Disclaimer: No therapy talk. No fake positivity.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+
+
+
       </div>
     </div>
   );
 };
+
+
 
 export default Pricing;
